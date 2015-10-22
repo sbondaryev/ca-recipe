@@ -7,6 +7,12 @@
      servings
      ])
 
+(defrecord Ingredient
+    [name
+     quantity
+     unit
+     ])
+
 (defrecord Person
     [fname
      lname])
