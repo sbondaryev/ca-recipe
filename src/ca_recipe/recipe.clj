@@ -1,20 +1,24 @@
-(defrecord Recipe
-    [name
-     author
-     description
-     ingredients
-     steps
-     servings
+(ns ca-recipe.recipe
+  (:require [schema.core :as s]))
+
+(s/defrecord Ingredient
+    [name :- s/Str
+     quantity :- s/Int
+     unit :- s/Keywort
      ])
 
-(defrecord Ingredient
-    [name
-     quantity
-     unit
+(s/defrecord Recipe
+    [name :- s/Str
+     author :- s/Str
+     description :- s/Str
+     ingredients :- [Ingredient]
+     steps :- [s/Str]
+     servings :- s/Int
      ])
 
-(defrecord Person
-    [fname
-     lname])
+(s/defrecord Person
+    [fname :- s/Str
+     lname :- s/Str
+     ])
 
 
