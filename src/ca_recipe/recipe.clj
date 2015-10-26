@@ -21,4 +21,7 @@
      lname :- s/Str
      ])
 
+(s/defn add-ingredients :- Recipe
+  [recipe :- Recipe & ingredients :- [Ingredients]]
+  (updete-in recipe [:ingredients] into ingredients))
 
