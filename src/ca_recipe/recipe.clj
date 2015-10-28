@@ -25,3 +25,12 @@
   [recipe :- Recipe & ingredients :- [Ingredients]]
   (updete-in recipe [:ingredients] into ingredients))
 
+(defmulti cost (fn [entity store] (class entity)))
+
+(defmethod cost Recipe [recipe store]
+  (reduce +$ zero-dollars
+          (map #(cost % store) (:ingredients recipe))))
+
+(defmethod cost Ingredient [ingredient store]
+  (cost-of store ingredient))
+
