@@ -52,3 +52,16 @@
   quantities with unit conversion if necessary."
   [{q1 :quantity u1 :unit :as i1} {q2 :quantity u2 :unit}]
   (assoc i1 :quantity (+ q1 (convert u2 u1 q2))))
+
+(defprotocol TaxedCost
+  (taxed-cost [entity store]))
+
+(extend-protocol TaxedCost
+  Object
+  (taxed-cost [entity store]
+    (if (satisfies? Cost entity)
+      (do (extend-protocol TaxedCost
+            (class entity)
+            (taxed-cost [entity store]
+              (* (cost entity store) (+ (tax-rate store))))))
+      (assert false (str "Unhandled entity: " entity)))))
