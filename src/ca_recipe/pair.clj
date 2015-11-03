@@ -23,3 +23,12 @@
       1 b
       (throw (IllegalArgumentException.))))
   (valAt [this k] (.valAt this k nil)))
+
+(defmethod print-method Pair
+  [pair ^java.io.Writer w]
+  (.write w "#ca-recipe.pair.Pair")
+  (print-method (vec (seq pair)) w))
+
+(defmethod print-dup Pair
+  [pair w]
+  (print-method pair w))
