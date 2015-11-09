@@ -1,4 +1,4 @@
-(ns ch5.jqueue
+(ns ca-recipe.jqueue
   (:import [java.util.concurrent LinkedBlockingQueue]))
 
 (defn pusher [q n]
