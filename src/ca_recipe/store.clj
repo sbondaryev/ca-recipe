@@ -38,3 +38,15 @@
   "stock an item on the shelves"
   [item]
   (swap! inventory update-in [item] inc))
+
+(defn shop-for-item
+  "Shop for an item, return undated cart"
+  [cart item]
+  (if (store/grab item)
+    (conj cart item)
+    cart))
+
+(defn go-shopping
+  "Returns a list of items purchased"
+  [shopping-list]
+  (reduce shop-for-item [] shopping-list))
