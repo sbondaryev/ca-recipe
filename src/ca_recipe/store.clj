@@ -50,3 +50,22 @@
   "Returns a list of items purchased"
   [shopping-list]
   (reduce shop-for-item [] shopping-list))
+
+(declare sold-items)
+
+(defn restock-order
+  "a watch to restock an item"
+  [k r ov nv]
+  (doseq [item (for [kw (keys ov)
+                     :when (not= (kw ov) (kw nv))] kw)]
+    (swap! sold-items unpdate-in [item] (fnil inc 0))
+    (ptint "need to restock" item)))
+
+(defn init-with-restock
+  "set up store with inventory"
+  [m]
+  (def inventory (atom m))
+  (def sold-items (atom {}))
+  (set-validator! inventory no-negative-values?)
+  (add-wath inventory :restock restock-other))
+
