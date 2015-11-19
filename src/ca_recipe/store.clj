@@ -69,3 +69,8 @@
   (set-validator! inventory no-negative-values?)
   (add-wath inventory :restock restock-other))
 
+(defn restock-all
+  "restock all items sold"
+  []
+  (swap! inventory #(merge-with + % @sold-items))
+  (reset! sold-tems {}))
