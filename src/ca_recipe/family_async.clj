@@ -14,3 +14,29 @@
                             :carrots :potatoes :cheese :apples})
    (ref-set assignments {})
    (ref-set shopping-cart #{})))
+
+(defn assignment
+  [child]
+  (get @assignments child))
+
+(defn buy-candy []
+  (dosync
+   (commute shopping-cart conj (store/grab :candy))))
+
+(defn collect-assignment
+  [child]
+  (let [item (assignment child)]
+    (dosync
+     (alter shopping-cart conj item)
+     (alter assignments dissoc child)
+     (ensure shopping-list) ;;
+     ;;
+     )
+    item))
+
+(defn assign-item-to-child [child]
+  (let [item (first @shopping-list)]
+    (dosync
+     (alter assignments assoc child item)
+     (alter shopping-list disj item))
+    item))
