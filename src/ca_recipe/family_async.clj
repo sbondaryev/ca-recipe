@@ -40,3 +40,10 @@
      (alter assignments assoc child item)
      (alter shopping-list disj item))
     item))
+
+(defn send-child-for-item
+  "eventually shop for an item"
+  [child item q]
+  (println child "is searching for" item) (dawdle)
+  (collect-assignment child)
+  (>!! q child))
