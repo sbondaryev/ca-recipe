@@ -44,6 +44,28 @@
 (defn send-child-for-item
   "eventually shop for an item"
   [child item q]
-  (println child "is searching for" item) (dawdle)
+  (println child "is searching for" item)
+  (dawdle)
   (collect-assignment child)
   (>!! q child))
+
+(defn report []
+  (println "store inventory" @store/inventory)
+  (println "shopping-list" @shopping-cart)
+  (println "assignments" @assignments)
+  (println "shopping-cart" @shopping-cart))
+
+(defn go-shopping []
+  (init)
+  (report)
+  (let [kids (chan 10)]
+    (doseq [k my-kids]
+      (>!! kids k))
+    (if (seq @shopping-list)
+      (do
+        (go
+          (send-child-for-item kid (assign-item-to-child kid) kids))
+        (recur (<! kids)))
+      (do
+        (println "done shopping.")
+        (report)))))
