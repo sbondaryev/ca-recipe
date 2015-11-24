@@ -62,11 +62,12 @@
   (let [kids (chan 10)]
     (doseq [k my-kids]
       (>!! kids k))
-    (if (seq @shopping-list)
-      (do
-        (go
-          (send-child-for-item kid (assign-item-to-child kid) kids))
-        (recur (<! kids)))
-      (do
-        (println "done shopping.")
-        (report)))))
+    (go-loop [kid (<! kids)]
+      (if (seq @shopping-list)
+        (do
+          (go
+            (send-child-for-item kid (assign-item-to-child kid) kids))
+          (recur (<! kids)))
+        (do
+          (println "done shopping.")
+          (report))))))
