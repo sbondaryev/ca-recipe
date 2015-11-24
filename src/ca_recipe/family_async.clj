@@ -2,7 +2,8 @@
 
 (def shopping-list (ref #{}))
 (def assignments (ref {}))
-(def shopping-cart (ref #{}))
+(def shopping-cart (ref #{}
+                        :validator #(not (contains? % :candy))))
 
 (defn init []
   (store/init {:eggs 2 :bacon 3 :apples 3
