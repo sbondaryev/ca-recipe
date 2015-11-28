@@ -26,3 +26,27 @@
 (defn delete-rule
   [ke rule]
   (tranform-rules ke #(-> % (disj rule))))
+
+(defrecord KnowledgeEngine
+    [config
+     ch-in
+     ch-out
+     rules
+     active])
+  
+(defn make-knowledge-engine
+  [config ch-in ch-out rule-set]
+  (->KnowledgeEngine config ch-in ch-out (atom rule-set) (atom false)))
+
+(defn start-knowledge-engine
+  [{:keys (ch-in ch-out rules active) :as ke}] (reset! active true)
+  (go-loop [request (<! ch-in)
+            response (fire-rules ke request)]
+    (>! ch-out response)
+    (when @active (recur))) ke)
+
+(defn stop-knowledge-engine
+  [{:keys (ch-out active) :as ke}]
+  (reset! active false) ;; exit go loop
+  (async/close! ch-out) ;; stop producing
+  ke)
