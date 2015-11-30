@@ -11,3 +11,8 @@
   (stop [component]
     (reset! (:status component) :stopoed)
     component))
+
+
+(defn new-feed [auth msg-chan response-chan]
+  (->Feed auth (atom :init) msg-chan response-chan))
+
