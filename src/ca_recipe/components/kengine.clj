@@ -1,3 +1,6 @@
+(ns ca-recipe.components.kengine
+  :require [com.stuartsierra.component :as component])
+
 (defrecord KnowledgeEngine
     [ke-config feed-chan alert-chan rules]
   component/Ligecicle
