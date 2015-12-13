@@ -50,3 +50,4 @@
   {"/greeting" {:controller handle-greeting :view greeting-view}})
 
 (def filters [logging-filter])
+(def tinyweb-instance (tinyweb request-handlers filters))
