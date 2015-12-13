@@ -43,3 +43,10 @@
     (str "<h1>Friendly Greetings</h1>" rendered-greetings)))
 
 (defn logging-filter [http-request]
+  (println (str "In Logging Filter - request for path: " (:path http-request)))
+  http-request)
+
+(def request-handlers
+  {"/greeting" {:controller handle-greeting :view greeting-view}})
+
+(def filters [logging-filter])
