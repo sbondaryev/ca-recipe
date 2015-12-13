@@ -24,3 +24,6 @@
           path (http-request :path)
           handler (request-handlers path)]
       (execute-request filtered-request handler))))
+
+(def request {:path "/greeting" :body "Mike,Joe,John,Steve"})
+
