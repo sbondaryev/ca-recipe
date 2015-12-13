@@ -27,3 +27,10 @@
 
 (def request {:path "/greeting" :body "Mike,Joe,John,Steve"})
 
+(defn make-greeting [name]
+  (let [greetings ["Hello" "Greetings" "Salutations" "Hola"]
+        greeting-court (count greetings)]
+    (str (greetings (rand-int greeting-court)) ", " name)))
+
+(defn handle-greeting [http-request]
+  {:greetings (map make-greeting (str/split (:body http-request) #","))})
