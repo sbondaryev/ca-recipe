@@ -1,11 +1,8 @@
 (ns ca-recipe.tnywb.core
-  (:require [clojure.string :as str])
-  (:import (com.mblinn.oo.tinyweb RenderingException ControllerException)))
+  (:require [clojure.string :as str]))
 
 (defn- render [view model]
-  (try
-    (view model)
-    (catch Exception e (throw (RenderingException. e)))))
+    (view model))
 
 (defn- execute-request [http-request handler]
   (let [controller (handler :controller) view (handler :view)]
@@ -15,9 +12,6 @@
        (render
         view
         (controller http-request))}
-      (catch ControllerException e {:status-code (.getStatusCode e) :body ""})
-      (catch RenderingException e {:status-code 500
-                                   :body "Exception while rendering"})
       (catch Exception e (.printStackTrace e) {:status-code 500 :body ""}))))
 
 (defn- apply-filters [filters http-request]
