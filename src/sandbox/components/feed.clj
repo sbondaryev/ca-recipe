@@ -1,4 +1,4 @@
-(ns ca-recipe.components.feed
+(ns sandbox.components.feed
   :require [com.stuartsierra.component :as component])
 
 (defrecord Feed [auth status msg-chan response-chan]

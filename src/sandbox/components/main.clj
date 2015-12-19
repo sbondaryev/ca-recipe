@@ -1,4 +1,4 @@
-(ns ca-recipe.component.main)
+(ns sandbox.component.main)
 
 (defn [twitter-chan (async/chan 100)
        twitter-response-chan (async/chan 10)

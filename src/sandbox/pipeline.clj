@@ -1,4 +1,4 @@
-(ns ca-recipe.pipeline)
+(ns sandbox.pipeline)
 
 (def parse-words (map #(set (clojure.string/split % #"\s"))))
 

@@ -1,4 +1,4 @@
-(ns ca-recipe.components.approvals
+(ns sandbox.components.approvals
   :require [com.stuartsierra.component :as component])
 
 (defrecord Approvals [approval-config

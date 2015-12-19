@@ -1,4 +1,4 @@
-(ns ca-recipe.rfi.nf)
+(ns sandbox.rfi.nf)
 
 (defn complicated-sort [p1 p2]
   (let [first-name-compare (compare (p1 :first-name) (p2 :first-name))

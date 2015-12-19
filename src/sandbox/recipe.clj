@@ -1,4 +1,4 @@
-(ns ca-recipe.recipe
+(ns sandbox.recipe
   (:require [schema.core :as s]))
 
 (s/defrecord Ingredient

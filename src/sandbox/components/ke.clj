@@ -1,4 +1,4 @@
-(ns ca-recepie.components.ke)
+(ns sandbox.components.ke)
 
 (defprotocol KE
   (get-rules [ke] "Get full rule set")
@@ -33,7 +33,7 @@
      ch-out
      rules
      active])
-  
+
 (defn make-knowledge-engine
   [config ch-in ch-out rule-set]
   (->KnowledgeEngine config ch-in ch-out (atom rule-set) (atom false)))

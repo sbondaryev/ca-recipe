@@ -1,4 +1,4 @@
-(ns ca-recipe.money)
+(ns sandbox.money)
 
 (declare validate-same-currency)
 

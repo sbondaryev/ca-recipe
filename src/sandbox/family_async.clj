@@ -1,4 +1,4 @@
-(ns ca-recipe.family-async)
+(ns sandbox.family-async)
 
 (def shopping-list (ref #{}))
 (def assignments (ref {}))

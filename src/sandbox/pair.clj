@@ -1,4 +1,4 @@
-(ns ca-recipe.pair
+(ns sandbox.pair
   (import [clojure.lang Counted Indexed ILookup Seqable]))
 
 (deftype Pair [a b]
@@ -26,7 +26,7 @@
 
 (defmethod print-method Pair
   [pair ^java.io.Writer w]
-  (.write w "#ca-recipe.pair.Pair")
+  (.write w "#sandbox.pair.Pair")
   (print-method (vec (seq pair)) w))
 
 (defmethod print-dup Pair

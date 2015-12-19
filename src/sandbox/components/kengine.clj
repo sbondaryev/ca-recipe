@@ -1,4 +1,4 @@
-(ns ca-recipe.components.kengine
+(ns sandbox.components.kengine
   :require [com.stuartsierra.component :as component])
 
 (defrecord KnowledgeEngine

@@ -1,4 +1,4 @@
-(ns ca-recipe.rfi.af)
+(ns sandbox.rfi.af)
 
 (def p1 {:first-name "Michael" :last-name "Bevilacqua"})
 (def p2 {:first-name "Pedro" :last-name "Vasquez"})

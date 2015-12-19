@@ -1,4 +1,4 @@
-(ns ca-recipe.store)
+(ns sandbox.store)
 
 (defn go-shopping-naive
   "Returns a list of items purchased"

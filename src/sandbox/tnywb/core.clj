@@ -1,4 +1,4 @@
-(ns ca-recipe.tnywb.core
+(ns sandbox.tnywb.core
   (:require [clojure.string :as str]))
 
 (defn- render [view model]

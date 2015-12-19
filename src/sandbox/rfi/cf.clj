@@ -1,4 +1,4 @@
-(ns ca-recipe.rfi.cf)
+(ns sandbox.rfi.cf)
 
 (defn make-composed-comparison [& comparisons]
   (fn [p1 p2]
