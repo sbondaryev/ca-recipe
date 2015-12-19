@@ -21,3 +21,12 @@
 (defn execute-purchase [purchase]
   (swap! purchases conj purchase)
   (purchase))
+
+;;test
+(def register (make-cash-register))
+(def purchase-1 (make-purchase register 100))
+(def purchase-2 (make-purchase register 50))
+(execute-purchase purchase-1)
+(execute-purchase purchase-2)
+(reset register)
+(doseq [purchase @purchases] (purchase))
