@@ -44,3 +44,19 @@ true
 
 ;;15 Double Down
 (partial * 2)
+
+
+;;16 Hello World
+#(str "Hello, " % "!")
+
+;;17 Sequences: map
+'(6 7 8)
+
+;;18 Sequences: filter
+[6 7]
+
+;;19 Last Element
+#(if (empty? (rest %)) (first %) (recur (rest %)))
+
+;;20 Penultimate Element
+#(if (empty? (rest(rest %))) (first %) (recur (rest %)))
