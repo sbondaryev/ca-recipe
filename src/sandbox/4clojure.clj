@@ -29,3 +29,18 @@ true
 
 ;;10 Intro to Maps
 20
+
+;;11 Maps: conj
+[:b 2]
+
+;;12 Intro to Sequences
+3
+
+;;13 Sequences: rest
+[20 30 40]
+
+;;14 Intro to Functions
+8
+
+;;15 Double Down
+(partial * 2)
