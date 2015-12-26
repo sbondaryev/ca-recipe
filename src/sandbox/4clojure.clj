@@ -60,3 +60,16 @@ true
 
 ;;20 Penultimate Element
 #(if (empty? (rest(rest %))) (first %) (recur (rest %)))
+
+
+;;21 Nth Element
+#(cond
+   (= %2 0) (first %1)
+   (or (< %2 0) (empty? (rest %1))) nil
+   :else (recur (rest %1) (dec %2)))
+
+;;22 Count a Sequence
+#(loop [col % nbr 1]
+   (if (empty? (rest col))
+     nbr
+     (recur (rest col) (inc nbr))))
