@@ -73,3 +73,40 @@ true
    (if (empty? (rest col))
      nbr
      (recur (rest col) (inc nbr))))
+
+;;23 Reverse a Sequence
+#(loop [col % rcol '()]
+   (if (empty? col)
+     rcol
+     (recur (rest col) (conj rcol (first col)))))
+
+;;24 Sum It All Up
+reduce +
+
+;;25 Find the odd numbers
+filter odd?
+
+;;26 Fibonacci Sequence
+(fn [nbr]
+  (->> (iterate (fn[[a b]] [b (+ a b)]) [1 1])
+       (map first)
+       (take nbr)))
+
+;;27 Palindrome Detector
+#(= (seq %) (reverse %))
+
+;;28 Flatten a Sequence
+(partial (fn flat[res col]
+           (let [fst (first col) rst (rest col)]
+             (-> res
+                 (#(if (sequential? fst) (flat % fst) (conj % fst)))
+                 (#(if (empty? rst) % (flat % rst)))))) [])
+
+;;29 Get the Caps
+(fn [s] (apply str (filter #(Character/isUpperCase %) s)))
+
+;;30 Compress a Sequence
+reduce #(if-not (= (last %1) %2) (conj %1 %2) %1) []
+
+;;31 Pack a Sequence
+partition-by identity
