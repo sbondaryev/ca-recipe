@@ -110,3 +110,9 @@ reduce #(if-not (= (last %1) %2) (conj %1 %2) %1) []
 
 ;;31 Pack a Sequence
 partition-by identity
+
+;;32 Duplicate a Sequence
+#(interleave % %)
+
+;;33 Replicate a Sequence
+(fn [col n] (reduce #(concat %1 (repeat n %2)) [] col))
