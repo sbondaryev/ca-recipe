@@ -134,3 +134,6 @@ partition-by identity
 
 ;;38 Maximum value
 (comp last sort (partial conj '()))
+
+;;39 Interleave Two Seqs
+mapcat list
