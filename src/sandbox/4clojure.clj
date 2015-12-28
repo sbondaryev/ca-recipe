@@ -116,3 +116,21 @@ partition-by identity
 
 ;;33 Replicate a Sequence
 (fn [col n] (reduce #(concat %1 (repeat n %2)) [] col))
+
+;;34 Implement range
+#(loop [a %1 col []]
+   (if (>= a %2)
+     col
+     (recur (inc a) (conj col a))))
+
+;;35 Local bindings
+7
+
+;;36 Let it Be
+[z 1 y 3 x 7]
+
+;;37 Regular Expressions
+"ABC"
+
+;;38 Maximum value
+(comp last sort (partial conj '()))
