@@ -137,3 +137,6 @@ partition-by identity
 
 ;;39 Interleave Two Seqs
 mapcat list
+
+;;40 Interpose a Seq
+(fn [s, col] (drop-last (mapcat #(list % s) col)))
