@@ -140,3 +140,6 @@ mapcat list
 
 ;;40 Interpose a Seq
 (fn [s, col] (drop-last (mapcat #(list % s) col)))
+
+;;41 Drop Every Nth Item
+#(mapcat (partial take (dec %2)) (partition-all %2 %1))
