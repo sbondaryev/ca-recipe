@@ -127,7 +127,7 @@ partition-by identity
 7
 
 ;;36 Let it Be
-[z 1 y 3 x 7]
+;;[z 1 y 3 x 7]
 
 ;;37 Regular Expressions
 "ABC"
@@ -147,3 +147,8 @@ mapcat list
 ;;42 Factorial Fun
 #(apply * (range 1 (inc %)))
 
+;;43 Reverse Interleave
+#(loop [col (partition %2 %1) res []]
+   (if-not (every? seq  col)
+     res
+     (recur (map rest col) (conj res (map first col)))))
