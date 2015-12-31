@@ -143,3 +143,7 @@ mapcat list
 
 ;;41 Drop Every Nth Item
 #(mapcat (partial take (dec %2)) (partition-all %2 %1))
+
+;;42 Factorial Fun
+#(apply * (range 1 (inc %)))
+
