@@ -152,3 +152,10 @@ mapcat list
    (if-not (every? seq  col)
      res
      (recur (map rest col) (conj res (map first col)))))
+
+;;44 Rotate Sequence
+#(->> %2
+      (split-at (mod %1 (count %2)))
+      (reverse)
+      (apply concat))
+
