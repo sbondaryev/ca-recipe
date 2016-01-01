@@ -159,3 +159,5 @@ mapcat list
       (reverse)
       (apply concat))
 
+;;45 Intro to Iterate
+[1 4 7 10 13]
