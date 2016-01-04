@@ -161,3 +161,19 @@ mapcat list
 
 ;;45 Intro to Iterate
 [1 4 7 10 13]
+
+;;46 Flipping out
+#(fn [& args] (apply % (reverse args)))
+
+;;47 Contain Yourself
+4
+
+;;48 Intro to some
+6
+
+;;49 Split a sequence
+#(conj [] (take %1 %2) (drop %1 %2))
+
+;;50 Split by Type
+#(vals (group-by type %))
+
