@@ -177,3 +177,9 @@ mapcat list
 ;;50 Split by Type
 #(vals (group-by type %))
 
+;;51 Advanced Destructuring
+[1 2 3 4 5]
+
+;;52 Intro to Destructuring
+;;[c e]
+
