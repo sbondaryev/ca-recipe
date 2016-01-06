@@ -193,3 +193,9 @@ mapcat list
        (apply concat)
        (distinct)))
 
+;;54 Partition a Sequence
+#(loop [xs %2  res []]
+   (if (>= (count xs) % )
+     (recur (drop % xs) (conj res (take % xs)))
+     res))
+
