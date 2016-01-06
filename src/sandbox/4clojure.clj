@@ -183,3 +183,13 @@ mapcat list
 ;;52 Intro to Destructuring
 ;;[c e]
 
+;;53 Longest Increasing Sub-Seq
+(fn [col]
+  (->> (map #(conj [] %1 %2) (drop-last col) (rest col))
+       (partition-by (fn [[a b]] (not= (- b a) 1)))
+       (filter (fn [sub] (some (fn [[a b]] (= (- b a) 1)) sub)))
+       (sort-by count)
+       (last)
+       (apply concat)
+       (distinct)))
+
