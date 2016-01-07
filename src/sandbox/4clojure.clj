@@ -199,3 +199,9 @@ mapcat list
      (recur (drop % xs) (conj res (take % xs)))
      res))
 
+;;55 Count Occurrences
+(fn [xs] (reduce-kv #(assoc % %2 (count %3)) {} (group-by identity xs)))
+
+;;56 Find Distinct Items
+(fn [xs] (reduce #(if (some #{%2} %1) %1 (conj %1 %2)) [] xs))
+
