@@ -192,6 +192,15 @@ mapcat list
        (last)
        (apply concat)
        (distinct)))
+;; wow solution
+;;(fn [xs]
+;;  (->> xs
+;;       (map #(vector % %2) (range))
+;;       (partition-by #(- (last %) (first %)))
+;;       reverse
+;;       (apply max-key count)
+;;       (map last)
+;;       (#(if (< (count %) 2) [] %))))
 
 ;;54 Partition a Sequence
 #(loop [xs %2  res []]
@@ -207,3 +216,12 @@ mapcat list
 
 ;;57 Simple Recursion
 [5 4 3 2 1]
+
+;;58 Function Composition
+(fn f [& func]
+  (fn g [& param]
+    (first (reduce #(conj [] (apply %2 %1)) param (reverse func)))))
+;; wow solution
+;; (fn [& args] (reduce (fn [a b] (fn [& more] (a (apply b more)))) args))
+
+
