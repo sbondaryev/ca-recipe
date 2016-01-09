@@ -2,13 +2,16 @@
   (:require [clojure.set :as cset]))
 
 
-(defn expand [the-vector [distance length]]
-  (->> (take-last distance the-vector)
+(defn expand [xs [distance length]]
+  (->> (take-last distance xs)
        (cycle)
        (take length)))
 
-(defn un-LZ77 [bites]
+(defn un-LZ77 [xs]
   (reduce #(if-not (vector? %2)
              (conj %1 %2)
              (into %1 (expand %1 %2)))
-          [] bites))
+          [] xs))
+
+(defn all-subvecs [xs]
+  (mapcat #(partition % 1 xs) (range 1 (count xs))))
