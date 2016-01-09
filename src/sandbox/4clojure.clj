@@ -224,4 +224,5 @@ mapcat list
 ;; wow solution
 ;; (fn [& args] (reduce (fn [a b] (fn [& more] (a (apply b more)))) args))
 
-
+;;59 Juxtaposition
+(fn [& fs] (fn [& args] (map #(apply % args) fs)))
