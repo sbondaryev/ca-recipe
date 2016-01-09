@@ -21,7 +21,9 @@
     [(drop k (take i xs)) k]))
 
 (defn longest-match-w-beginning [left-array right-array]
-  (let [all-left-chunks (all-subvecs left-array)
-        all-right-chunks-from-beginning (all-subvecs-from-beginning right-array)]
-    (filter #(some #{(first %)} all-right-chunks-from-beginning) all-left-chunks)))
+  (let [left-chunks (all-subvecs left-array)
+        right-chunks (all-subvecs-from-beginning right-array)]
+    (->>(filter #(some #{(first %)} right-chunks) left-chunks)
+        (sort-by #(count (first %)))
+        (last))))
         
