@@ -27,3 +27,12 @@
         (sort-by #(count (first %)))
         (last))))
         
+(defn LZ77-STEP [window look-ahead]
+  (let [longest (longest-match-w-beginning window look-ahead)]
+    {:distance (-  (count window) pos-subv-w)
+     :length (first (subvec look-ahead (count longest)))
+     :char the-char})
+  {:distance 0
+   :length 0
+   :char (first look-ahead)})))
+
