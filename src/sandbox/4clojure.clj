@@ -226,3 +226,11 @@ mapcat list
 
 ;;59 Juxtaposition
 (fn [& fs] (fn [& args] (map #(apply % args) fs)))
+
+;;60 Sequence Reductions
+(fn f
+  ([op a] (f op (first a) (rest a)))
+  ([op a b]
+   (if (seq b)
+     (lazy-seq (cons a (f op (op a (first b)) (rest b))))
+     [a])))
