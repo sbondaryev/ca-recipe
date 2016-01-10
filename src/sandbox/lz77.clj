@@ -27,12 +27,24 @@
         (sort-by #(count (first %)))
         (last))))
         
-(defn LZ77-STEP [window look-ahead]
+(defn LZ77-STEP [[window look-ahead]]
   (if-let [longest (longest-match-w-beginning window look-ahead)]
-    {:distance (-  (count window) (second longest))
-     :length (count longest)
-     :char (first (subvec look-ahead (count longest)))}
-    {:distance 0
-     :length 0
+    {:length (count (first longest))
+     :char (conj [] (- (count window) (second longest)) (count (first longest)))}
+    {:length 1
      :char (first look-ahead)}))
 
+(defn slider [window xs]
+  (map #(conj [] (take-last window (take % xs)) (drop % xs)) (range 0 (count xs))))
+
+(defn compress [chunks]
+  (loop [chunks chunks res []]
+    (if (seq chunks)
+      (let [rc (LZ77-STEP (first chunks))]
+        (recur (drop (:length rc) chunks) (conj res rc)))
+      res)))
+
+(defn LZ77 [bytes-array window-size]
+  (->> (slider window-size bytes-array)
+       (compress)
+       (map :char)))
