@@ -234,3 +234,6 @@ mapcat list
    (if (seq b)
      (lazy-seq (cons a (f op (op a (first b)) (rest b))))
      [a])))
+
+;;61 Map Construction
+(defn f [a b] (into {} (map #(conj [] %1 %2) a b)))
