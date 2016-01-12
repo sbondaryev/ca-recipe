@@ -25,3 +25,21 @@
 ;; even, we omit the last element from half-step.
     (into half-step other-half-step)))
 ;;=> we return half to which we append the mirror copy.
+
+(defn pascal-rows [yield row-number]
+  (loop [nb 0
+         result []
+         latest-result [1]]
+;;=> We'll loop using pascal-row-step,
+;;=> keeping track of the last
+;;computed line at each step of the recursion.
+    (if (<= nb row-number)
+;;=> the counter did not still reach the end
+      (recur (inc nb)
+             (conj result latest-result)
+             (pascal-row-step yield latest-result))
+;;=> We recur incrementing the counter, feeding the new line to
+;; result and keeping track of the last computed line.
+      result)))
+;;=> end of the recursion, emitting result.
+
