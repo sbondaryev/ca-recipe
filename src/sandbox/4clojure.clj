@@ -236,4 +236,8 @@ mapcat list
      [a])))
 
 ;;61 Map Construction
-(defn f [a b] (into {} (map #(conj [] %1 %2) a b)))
+(fn [a b] (into {} (map #(conj [] %1 %2) a b)))
+
+;;62 Re-implement Iterate
+(fn g [f x]
+  (lazy-seq (cons x (g f (f x)))))
