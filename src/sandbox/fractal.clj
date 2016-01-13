@@ -43,3 +43,10 @@
       result)))
 ;;=> end of the recursion, emitting result.
 
+(defn even-odd-yield
+  [n1 n2]
+  (mod (+ n1 n2) 2))
+
+(def gr-triangles (partial pascal-rows even-odd-yield))
+
+(gr-triangles 10)
