@@ -49,4 +49,35 @@
 
 (def gr-triangles (partial pascal-rows even-odd-yield))
 
-(gr-triangles 10)
+(defn draw [size]
+  (let [img (BufferedImage. size size BufferedImage/TYPE_INT_ARGB)
+;;=> Creating img as a Buffered Image
+        plot-rows (gr-triangles size)
+;;=> computing the triangle of 0 and 1
+        plots (for [x (range 0 size) y (range 0 x)]
+                (if (= 1 (get (get plot-rows x) y))
+                  [x y]))
+;;=> we save the positions holding 1 in vectors. As the structure
+;; is triangular;
+;; the first counter, "x" goes up to "size", and the second one,
+;; "y",
+;;    goes up to "x"
+        gfx (.getGraphics img)]
+;;=> we get the graphics component, where to draw from the Java
+;; Object.
+    (.setColor gfx Color/WHITE)
+    (.fillRect gfx 0 0 size size )
+;;=> we set a white background for the image.
+    (.setColor gfx Color/BLACK)
+;;=> We set the pen color to black again
+    (doseq [p (filter (comp not nil?)  plots)]
+      (.drawLine gfx
+                 (get p 0)
+                 (get p 1)
+                 (get p 0)
+                 (get p 1)))
+;;=> We plot, by drawing a line from and to the same point.
+    (ImageIO/write img "png"
+                   (File. "result.png"))))
+;;=> and we save the image as a png in this location.
+;; Be sure to set a correct one when running on your machine !
