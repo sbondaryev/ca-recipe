@@ -241,3 +241,6 @@ mapcat list
 ;;62 Re-implement Iterate
 (fn g [f x]
   (lazy-seq (cons x (g f (f x)))))
+
+;;63 Group a Sequence
+(fn [f xs] (reduce #(update %1 (f %2) (comp vec conj) %2) {} xs))
