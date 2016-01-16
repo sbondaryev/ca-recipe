@@ -8,25 +8,11 @@
   (vec (map #(apply yield %) (partition 2 1 (concat [0] pascal-row [0])))))
 
 (defn pascal-rows [yield row-number]
-  (loop [nb 0
-         result []
-         latest-result [1]]
-;;=> We'll loop using pascal-row-step,
-;;=> keeping track of the last
-;;computed line at each step of the recursion.
-    (if (<= nb row-number)
-;;=> the counter did not still reach the end
-      (recur (inc nb)
-             (conj result latest-result)
-             (pascal-row-step yield latest-result))
-;;=> We recur incrementing the counter, feeding the new line to
-;; result and keeping track of the last computed line.
-      result)))
-;;=> end of the recursion, emitting result.
+  (take row-number (iterate (partial pascal-row-step yield) [1])))
 
 (defn even-odd-yield
   [n1 n2]
-  (mod (+ n1 n2) 2))
+  (+ n1 n2))
 
 (def gr-triangles (partial pascal-rows even-odd-yield))
 
