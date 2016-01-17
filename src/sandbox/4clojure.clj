@@ -247,3 +247,12 @@ mapcat list
 
 ;;64 Intro to Reduce
 +
+
+;;65 Black Box Testing
+(fn f [xs]
+  (case (conj (empty xs) [:a 1] [:a 2])
+    {:a 2} :map
+    [[:a 1] [:a 2]] :vector
+    [[:a 2] [:a 1]] :list
+    #{[:a 2] [:a 1]} :set))
+    
