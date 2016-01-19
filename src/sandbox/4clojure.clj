@@ -256,3 +256,6 @@ mapcat list
     [[:a 2] [:a 1]] :list
     #{[:a 2] [:a 1]} :set))
     
+;;66 Greatest Common Divisor
+(defn f[a b] (some #(if (every? integer? %) (first %)) (for [k (range (min a b) 0 -1)] [k (/ (min a b) k) (/ (max a b) k)])))
+
