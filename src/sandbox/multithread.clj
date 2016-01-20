@@ -73,3 +73,11 @@
     ;; and prepare a map with it.
     lock-indices))
 ;;=> output of this is : ({:lock-id {:lock "l1"}, :lock-idx 2})
+
+(defn the-locks-inst-depends-on
+  [instructions instruction]
+  (let [the-inst-idx (.indexOf instructions instruction)
+        the-lock-idxs (all-locks-indices instructions)]
+    (into []  (->> the-lock-idxs
+                   (filter #(> the-inst-idx (:lock-idx %) ))
+                   (map :lock-id)))))
