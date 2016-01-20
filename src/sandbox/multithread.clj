@@ -57,3 +57,5 @@
 ;;=> else we pass result as is in the recursion
                (z/next loc))))))
 ;;=> and we recur with the next element.
+
+(def insts-effort {:heavy-op 10 :medium-op 5 :light-op 2 :lock 1 :unlock 1})
