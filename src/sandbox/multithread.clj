@@ -59,3 +59,17 @@
 ;;=> and we recur with the next element.
 
 (def insts-effort {:heavy-op 10 :medium-op 5 :light-op 2 :lock 1 :unlock 1})
+
+(defn all-locks-indices  [instructions]
+  ;;=> 'instructions' is the ':instructions vector' of the output of
+  ;; fire-process.
+  (let [locks (filter #(= (:inst-type %) :lock) instructions)
+        ;;=> We find out all the 'locks' in 'instructions'.
+        lock-indices (map (fn [l] {:lock-id (l :inst-id)
+                                   :lock-idx (.indexOf
+                                              instructions l)})
+                          locks)]
+    ;; And for every lock we find out its index in 'instructions,
+    ;; and prepare a map with it.
+    lock-indices))
+;;=> output of this is : ({:lock-id {:lock "l1"}, :lock-idx 2})
