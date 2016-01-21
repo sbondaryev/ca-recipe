@@ -138,3 +138,29 @@
                    processes-w-count)))
 ;=> processes-w-count is just another name for the "scheduled"
 ;; state map.
+
+(defn find-inst-to-be-fired-in-process
+         [locks
+          process-id
+          the-process-instructions
+          the-process-scheduled-parts]
+         (let [p-not-locked-instrs (set (->> the-process-instructions
+                                             (filter #(not (is-locked? process-id
+                                                                       the-process-instructions
+                                                                       locks
+                                                                       %)))))
+;;=> A set of not locked instructions
+               p-incomplete-instrs (set (->> (:instructions  the-process-
+                                                             scheduled-parts)
+                                             (filter incomplete-instruction?)
+                                             (map #(dissoc % :count))))
+;;=> A set of incomplete instructions
+               fireable-instrs (clojure.set/intersection p-not-locked-instrs
+                                                         p-incomplete-instrs)
+;;=> Their intersection
+               instr-id-to-fire (->> fireable-instrs
+                                     (sort-by #(.indexOf the-process-instructions %) < )
+                                     (first)
+                                     (:inst-id))]
+;;=> The first on of them
+           instr-id-to-fire))
