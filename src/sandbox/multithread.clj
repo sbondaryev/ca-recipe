@@ -108,3 +108,15 @@
 ;; and the locker is not its process, then it is considered as
 ;; locked.
 
+(defn scheduled-processes-parts
+  [scheduled]
+  (into [] (map  (fn [p] {:process-id (:process-id p)
+                          :instructions (into []
+                                              (map (fn [i] {:inst-id (:inst-id i)
+                                                            :inst-type (:inst-type i)
+                                                            :count (count (:times i))})
+                                                   (:instructions   p)))})
+                 scheduled)))
+;;=> this functions just adds :count n to the map maintained in
+;;"scheduled"
+
