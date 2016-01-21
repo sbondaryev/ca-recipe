@@ -120,3 +120,21 @@
 ;;=> this functions just adds :count n to the map maintained in
 ;;"scheduled"
 
+(defn incomplete-instruction?
+  [instruction-w-count]
+  (let [instr-effort (insts-effort (instruction-w-count :inst-type))
+        instr-count (instruction-w-count :count)]
+    (< instr-count instr-effort)))
+
+(defn incomplete-process?
+  [process-w-counts]
+  (let [instrs-w-count (process-w-counts :instructions)]
+    (some true? (map incomplete-instruction?
+                     instrs-w-count))))
+
+(defn more-incomplete-processes?
+  [processes-w-count]
+  (some true? (map incomplete-process?
+                   processes-w-count)))
+;=> processes-w-count is just another name for the "scheduled"
+;; state map.
