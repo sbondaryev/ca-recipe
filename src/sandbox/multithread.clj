@@ -164,3 +164,84 @@
                                      (:inst-id))]
 ;;=> The first on of them
            instr-id-to-fire))
+
+
+(defn progress-on-process!
+  [locks-ref
+   scheduled-ref
+   the-process
+   quantum]
+  (let [the-process-instrs (the-process :instructions)
+        processes-scheduled-parts (scheduled-processes-parts @
+                                   scheduled-ref)
+the-process-scheduled-parts (->> processes-scheduled-parts
+(filter #(= (:process-id %)
+(:process-id the-process)))
+                                         (first))]
+;;=> Here we prepare the processes scheduled parts and take only
+  ;; the relevant to the particular 'process-id'.
+    (if-let [the-instr-to-fire-id (find-inst-to-be-fired-in-
+                                   process @locks-ref
+                                   (:process-id the-process)
+                                   the-process-instrs
+                                   the-process-scheduled-parts )]
+;;=> If there is one instruction in "process-id" to be fired;
+      (dosync
+;;=> We use the refs, because we need to do transactions involving
+  ;; both "scheduled" and "locks"
+       (let [the-instr-to-fire (->> the-process-instrs
+                                    (filter #(= (:inst-id %)
+                                                the-instr-to-fire-id))
+                                    (first))]
+;;=> We get the entry relevant to this instruction-id
+         (cond
+           (= (:inst-type the-instr-to-fire) :lock ) (alter locks-ref
+                                                            lock
+                                                            (:process-id the-process)
+                                                            the-instr-to-fire-id)
+           {:lock
+            (= (:inst-type the-instr-to-fire) :unlock ) (alter
+                                                         unlock
+                                                         locks-ref
+                                                         (:process-id the-process)
+                                                         (:unlock the-instr-to-fire-id)})))
+;;=> If it is a "lock" or "unlock", We update the "locks" state
+;;   map
+       (let [p-in-scheduled (->> @scheduled-ref
+                                 (filter #(= (:process-id %)
+                                             (:process-id the-process)))
+                                 (first))
+   ;;=> To update the "scheduled" ref, we begin by finding the
+   ;; ':process-d' in the processes vector
+             instr-in-p-in-scheduled (->> (get p-in-scheduled
+                                               :instructions)
+                                          the-instr-to-fire-id))
+         (filter #(= (:inst-id %)
+                     (first))
+  ;; Then We find the instruction in this process
+                 idx-p-in-scheduled (max 0 (.indexOf @scheduled-ref
+                                                     p-in-scheduled))
+                 idx-inst-in-p-in-scheduled (max 0
+                                                 (.indexOf  (get p-in-scheduled :instructions)
+                                                            instr-in-p-in-scheduled))
+    ;;=> We compute the index of the instruction; or we set it at 0
+      ;; if it is not found, which means it is the first time it is
+      ;; scheduled.
+                 times-in-inst-in-p-in-scheduled (get
+                                                  (get (p-in-scheduled
+                                                        :instructions)
+                                                       idx-inst-in-p-in-scheduled) :times )
+    ;;=> We get the times vector in "scheduled" related to this
+                 ;; instruction
+                 _ (alter scheduled-ref assoc-in [idx-p-in-scheduled
+                                                  :instructions idx-inst-in-p-in-scheduled :times]
+                          (conj times-in-inst-in-p-in-scheduled
+                                quantum))])
+    ;;=> And using assoc-in, with indices and keys as a "path
+    ;;   vector", we Update the "scheduled" ref with times vector
+    ;;   to which we  Append the current "quantum".
+       true)
+    ;;=> If we were able to find a fireable instruction,
+    ;;   we issue "true".
+      false)))
+    ;; => Else we issue "false".
