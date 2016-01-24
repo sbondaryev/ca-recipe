@@ -37,26 +37,17 @@
     :UNLOCK (fn [x y] {:inst-type :unlock :inst-id {:unlock  (get y 1)}})}
    (parser program)))
 
+(def program
+  "heavy-op op1;
+  light-op op2;
+  lock l1;
+  medium-op op3;
+ unlock l1;")
+
 (defn fire-a-process [grammar program process-id priority]
-  (let [prsr (insta/parser grammar)
-        vec-instructions (gen-program prsr program)
-;;=> the nested structure
-        zpr (z/vector-zip vec-instructions)]
-    (loop [result []
-           loc (->  zpr z/down)]
-      (if (z/end? loc)
-;;=> the end of recursion, no more nodes to visit
-        {:process-id process-id
-         :instructions result
-         :priority priority}
-;;=> We generate the process
-        (recur (if (map? (z/node loc))
-;;=> We only append to result the elements of type 'map'
-                 (conj result (z/node loc))
-                 result)
-;;=> else we pass result as is in the recursion
-               (z/next loc))))))
-;;=> and we recur with the next element.
+  {:process-id process-id
+   :instructions (flatten (gen-program (insta/parser grammar) program))
+   :priority priority})
 
 (def insts-effort {:heavy-op 10 :medium-op 5 :light-op 2 :lock 1 :unlock 1})
 
