@@ -266,3 +266,13 @@ mapcat list
        (remove (fn [n] (some integer? (map #(/ n %) (range 2 n)))))
        (take k)))
 
+;;68 Recurring Theme
+[7 6 5 4 3]
+
+;;69 Merge with a Function
+(defn g [f & xs]
+  (->> (apply concat xs)
+       (group-by first)
+       (map (fn [[k v]] [k (reduce f (map second v))]))
+       (into {})))
+
