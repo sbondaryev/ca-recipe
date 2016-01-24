@@ -272,3 +272,70 @@ the-process-scheduled-parts (->> processes-scheduled-parts
   (reduce merge (map prepare-locks-for-a-p processes)))
 ;;=> Applying "prepare-locks-for-a-p", we generate locks for all
 ;;   processes  that would run concurrently.
+
+(defn gen-processes-cycles
+  [processes]
+  (let [sorted-procs-by-prio (sort-by :priority > processes)
+        procs-pattern (mapcat #(repeat (:priority %)
+                                       %)
+                              sorted-procs-by-prio)]
+    ;;=> A pattern is a single repetition "priority" times of each
+    ;;   process
+    (cycle procs-pattern)))
+;;=> Generates an infinite sequence like we described above.
+
+(defn process-sequential-time
+  [a-process]
+  (let [instructions (a-process :instructions)
+        inst-types (map :inst-type instructions)
+        lengths (map #(get insts-effort %) inst-types)]
+    (reduce + lengths)))
+;;=> We get instruction-types, grab the efforts from the "insts-
+;; effort"
+;;   map and sum them all up using reduce.
+
+(defn schedule-programs
+  [language programs]
+;;=> programs are maps : {:program "the textual program",
+;;  :process-id the-process-id
+;;  :priority the-process-priority }
+  (let [processes (into [] (map #(fire-a-process language
+                                                 (:program %)
+                                                 (:process-id %)
+                                                 (:priority %))
+                                programs))
+;;=> Processes are constructed
+        timeout (* 2 (reduce + (map process-sequential-time
+                                    processes)))
+;;=> "timeout" is the total length of all processes executed one
+;;   after the other.
+        locks (ref (prepare-locks processes))
+        scheduled (ref (prepare-scheduled processes))
+        processes-cycles  (gen-processes-cycles processes)]
+;;=> We prepare "locks" and "scheduled" refs, and the weighted
+;;   process repetitions that the scheduler will have to cycle
+;;   through
+    (loop [quantum 0
+           remaining-processes processes-cycles]
+;;=> We loop
+      (if (and (more-incomplete-processes? (scheduled-processes-parts @scheduled))
+               (< quantum timeout))
+        (do
+          (progress-on-process! locks scheduled
+                                (first remaining-processes)
+                                quantum)
+;;=> progress on the selected process, with current "quantum"
+          (recur (inc quantum)
+                 (next remaining-processes)))
+;;=> Go to next iteration, incrementing quantum and cycling
+;;=> through the The weighted processes cycles.
+        @scheduled))))
+
+(def programs
+  [{:priority 3,
+    :program
+    "heavy-op op1;light-op op2;lock l1;medium-op op3;unlock l1;",
+    :process-id :pr1}
+   {:priority 1,
+    :program "lock l1;medium-op op4;unlock l1;medium-op op5;",
+    :process-id :pr2}])
