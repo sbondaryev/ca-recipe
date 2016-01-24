@@ -1,4 +1,4 @@
-(ns recipe3.core
+(ns sandbox.multithread
   (:require [instaparse.core :as insta])
   (:require [clojure.zip :as z])
   (:require [clojure.pprint :refer :all]))
@@ -150,8 +150,7 @@
                                                                        locks
                                                                        %)))))
 ;;=> A set of not locked instructions
-               p-incomplete-instrs (set (->> (:instructions  the-process-
-                                                             scheduled-parts)
+               p-incomplete-instrs (set (->> (:instructions  the-process-scheduled-parts)
                                              (filter incomplete-instruction?)
                                              (map #(dissoc % :count))))
 ;;=> A set of incomplete instructions
@@ -180,8 +179,7 @@ the-process-scheduled-parts (->> processes-scheduled-parts
                                          (first))]
 ;;=> Here we prepare the processes scheduled parts and take only
 ;; the relevant to the particular 'process-id'.
-    (if-let [the-instr-to-fire-id (find-inst-to-be-fired-in-
-                                   process @locks-ref
+    (if-let [the-instr-to-fire-id (find-inst-to-be-fired-in-process @locks-ref
                                    (:process-id the-process)
                                    the-process-instrs
                                    the-process-scheduled-parts )]
@@ -195,16 +193,8 @@ the-process-scheduled-parts (->> processes-scheduled-parts
                                     (first))]
 ;;=> We get the entry relevant to this instruction-id
          (cond
-           (= (:inst-type the-instr-to-fire) :lock ) (alter locks-ref
-                                                            lock
-                                                            (:process-id the-process)
-                                                            the-instr-to-fire-id)
-           {:lock
-            (= (:inst-type the-instr-to-fire) :unlock ) (alter
-                                                         unlock
-                                                         locks-ref
-                                                         (:process-id the-process)
-                                                         (:unlock the-instr-to-fire-id)})))
+           (= (:inst-type the-instr-to-fire) :lock ) (alter locks-ref lock (:process-id the-process) the-instr-to-fire-id)
+           (= (:inst-type the-instr-to-fire) :unlock ) (alter locks-ref unlock (:process-id the-process) {:lock (:unlock the-instr-to-fire-id)})))
 ;;=> If it is a "lock" or "unlock", We update the "locks" state
 ;;   map
        (let [p-in-scheduled (->> @scheduled-ref
@@ -213,17 +203,13 @@ the-process-scheduled-parts (->> processes-scheduled-parts
                                  (first))
 ;;=> To update the "scheduled" ref, we begin by finding the
 ;; ':process-d' in the processes vector
-             instr-in-p-in-scheduled (->> (get p-in-scheduled
-                                               :instructions)
-                                          the-instr-to-fire-id))
-         (filter #(= (:inst-id %)
-                     (first))
+             instr-in-p-in-scheduled (->> (get p-in-scheduled :instructions)
+                                          (filter #(= (:inst-id %)
+                                                      the-instr-to-fire-id))
+                                          (first))
 ;; Then We find the instruction in this process
-                 idx-p-in-scheduled (max 0 (.indexOf @scheduled-ref
-                                                     p-in-scheduled))
-                 idx-inst-in-p-in-scheduled (max 0
-                                                 (.indexOf  (get p-in-scheduled :instructions)
-                                                            instr-in-p-in-scheduled))
+             idx-p-in-scheduled (max 0 (.indexOf @scheduled-ref p-in-scheduled))
+             idx-inst-in-p-in-scheduled (max 0 (.indexOf  (get p-in-scheduled :instructions) instr-in-p-in-scheduled))
 ;;=> We compute the index of the instruction; or we set it at 0
 ;; if it is not found, which means it is the first time it is
 ;; scheduled.
