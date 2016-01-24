@@ -259,3 +259,10 @@ mapcat list
 ;;66 Greatest Common Divisor
 (defn f[a b] (some #(if (every? integer? %) (first %)) (for [k (range (min a b) 0 -1)] [k (/ (min a b) k) (/ (max a b) k)])))
 
+;;67 Prime Numbers
+(defn f [k]
+  (->> (range)
+       (drop 2)
+       (remove (fn [n] (some integer? (map #(/ n %) (range 2 n)))))
+       (take k)))
+
