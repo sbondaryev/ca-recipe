@@ -64,33 +64,17 @@
          (map :lock-id)
          (into []))))
 
-(defn lock
-  "locks lock lock-id in locks map"
-  [locks process-id lock-id]
+(defn lock [locks process-id lock-id]
   (assoc locks lock-id {:locker process-id :locked true}))
-(defn unlock
-  "unlocks lock lock-id in locks map"
-  [locks process-id lock-id]
+
+(defn unlock [locks process-id lock-id]
   (assoc locks lock-id {:locker process-id :locked false}))
-;;=> The locks state contains its locked state and which process
-;; did lock it.
 
-(defn is-locked?
-  [process-id
-   instructions
-   locks
-   instruction]
-  (let [inst-locks (the-locks-inst-depends-on instructions
-                                              instruction)]
-    (some true? (map #(and (not= process-id ((get locks %)
-                                             :locker))
-                           ((get locks %) :locked))
-                     inst-locks))))
-;;=> If some of the locks the instruction depend on are locked (:locked true)
-;; and the locker is not its process, then it is considered as
-;; locked.
+(defn is-locked? [process-id instructions locks instruction]
+  (->> (the-locks-inst-depends-on instructions instruction)
+       (some #(and (not= process-id ((get locks %) :locker))
+                   ((get locks %) :locked)))))
 
-(defn scheduled-processes-parts
   [scheduled]
   (into [] (map  (fn [p] {:process-id (:process-id p)
                           :instructions (into []
