@@ -64,61 +64,33 @@
          (map :lock-id)
          (into []))))
 
-(defn lock
-  "locks lock lock-id in locks map"
-  [locks process-id lock-id]
+(defn lock [locks process-id lock-id]
   (assoc locks lock-id {:locker process-id :locked true}))
-(defn unlock
-  "unlocks lock lock-id in locks map"
-  [locks process-id lock-id]
+
+(defn unlock [locks process-id lock-id]
   (assoc locks lock-id {:locker process-id :locked false}))
-;;=> The locks state contains its locked state and which process
-;; did lock it.
 
-(defn is-locked?
-  [process-id
-   instructions
-   locks
-   instruction]
-  (let [inst-locks (the-locks-inst-depends-on instructions
-                                              instruction)]
-    (some true? (map #(and (not= process-id ((get locks %)
-                                             :locker))
-                           ((get locks %) :locked))
-                     inst-locks))))
-;;=> If some of the locks the instruction depend on are locked (:locked true)
-;; and the locker is not its process, then it is considered as
-;; locked.
+(defn is-locked? [process-id instructions locks instruction]
+  (->> (the-locks-inst-depends-on instructions instruction)
+       (some #(and (not= process-id ((get locks %) :locker))
+                   ((get locks %) :locked)))))
 
-  [scheduled]
-  (into [] (map  (fn [p] {:process-id (:process-id p)
-                          :instructions (into []
-                                              (map (fn [i] {:inst-id (:inst-id i)
-                                                            :inst-type (:inst-type i)
-                                                            :count (count (:times i))})
-                                                   (:instructions   p)))})
-                 scheduled)))
-;;=> this functions just adds :count n to the map maintained in
-;;"scheduled"
+(defn sheduled-processes-parts [scheduled]
+  (map #(assoc-in
+         % [:instructions :count]
+         (count (get-in % [:instructions :times]))) scheduled))
 
-(defn incomplete-instruction?
-  [instruction-w-count]
+(defn incomplete-instruction? [instruction-w-count]
   (let [instr-effort (insts-effort (instruction-w-count :inst-type))
         instr-count (instruction-w-count :count)]
     (< instr-count instr-effort)))
 
-(defn incomplete-process?
-  [process-w-counts]
+(defn incomplete-process? [process-w-counts]
   (let [instrs-w-count (process-w-counts :instructions)]
-    (some true? (map incomplete-instruction?
-                     instrs-w-count))))
+    (some incomplete-instruction? instrs-w-count)))
 
-(defn more-incomplete-processes?
-  [processes-w-count]
-  (some true? (map incomplete-process?
-                   processes-w-count)))
-;=> processes-w-count is just another name for the "scheduled"
-;; state map.
+(defn more-incomplete-processes? [processes-w-count]
+  (some incomplete-process? processes-w-count))
 
 (defn find-inst-to-be-fired-in-process
          [locks
