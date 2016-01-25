@@ -58,11 +58,11 @@
 
 (defn the-locks-inst-depends-on
   [instructions instruction]
-  (let [the-inst-idx (.indexOf instructions instruction)
-        the-lock-idxs (all-locks-indices instructions)]
-    (into []  (->> the-lock-idxs
-                   (filter #(> the-inst-idx (:lock-idx %) ))
-                   (map :lock-id)))))
+  (let [the-inst-idx (.indexOf instructions instruction)]
+    (->> (all-locks-indices instructions)
+         (filter #(> the-inst-idx (:lock-idx %) ))
+         (map :lock-id)
+         (into []))))
 
 (defn lock
   "locks lock lock-id in locks map"
