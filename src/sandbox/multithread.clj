@@ -59,7 +59,7 @@
 (defn the-locks-inst-depends-on
   [instructions instruction]
   (let [the-inst-idx (.indexOf instructions instruction)]
-    (->> (all-locks-indices instructions)
+    (->> (all-lock-indices instructions)
          (filter #(> the-inst-idx (:lock-idx %) ))
          (map :lock-id)
          (into []))))
@@ -75,7 +75,7 @@
        (some #(and (not= process-id ((get locks %) :locker))
                    ((get locks %) :locked)))))
 
-(defn sheduled-processes-parts [scheduled]
+(defn scheduled-processes-parts [scheduled]
   (map #(assoc-in
          % [:instructions :count]
          (count (get-in % [:instructions :times]))) scheduled))
@@ -92,50 +92,41 @@
 (defn more-incomplete-processes? [processes-w-count]
   (some incomplete-process? processes-w-count))
 
-(defn find-inst-to-be-fired-in-process
-         [locks
-          process-id
-          the-process-instructions
-          the-process-scheduled-parts]
-         (let [p-not-locked-instrs (set (->> the-process-instructions
-                                             (filter #(not (is-locked? process-id
-                                                                       the-process-instructions
-                                                                       locks
-                                                                       %)))))
+(defn find-inst-to-be-fired-in-process [locks process-id the-process-instructions the-process-scheduled-parts]
+  (let [p-not-locked-instrs (set (->> the-process-instructions
+                                      (filter #(not (is-locked? process-id
+                                                                the-process-instructions
+                                                                locks
+                                                                %)))))
 ;;=> A set of not locked instructions
-               p-incomplete-instrs (set (->> (:instructions  the-process-scheduled-parts)
-                                             (filter incomplete-instruction?)
-                                             (map #(dissoc % :count))))
+        p-incomplete-instrs (set (->> (:instructions  the-process-scheduled-parts)
+                                      (filter incomplete-instruction?)
+                                      (map #(dissoc % :count))))
 ;;=> A set of incomplete instructions
-               fireable-instrs (clojure.set/intersection p-not-locked-instrs
+        fireable-instrs (clojure.set/intersection p-not-locked-instrs
                                                          p-incomplete-instrs)
 ;;=> Their intersection
-               instr-id-to-fire (->> fireable-instrs
-                                     (sort-by #(.indexOf the-process-instructions %) < )
-                                     (first)
-                                     (:inst-id))]
+        instr-id-to-fire (->> fireable-instrs
+                              (sort-by #(.indexOf the-process-instructions %) < )
+                              (first)
+                              (:inst-id))]
 ;;=> The first on of them
-           instr-id-to-fire))
+    instr-id-to-fire))
 
 
-(defn progress-on-process!
-  [locks-ref
-   scheduled-ref
-   the-process
-   quantum]
+(defn progress-on-process! [locks-ref scheduled-ref the-process quantum]
   (let [the-process-instrs (the-process :instructions)
-        processes-scheduled-parts (scheduled-processes-parts @
-                                   scheduled-ref)
-the-process-scheduled-parts (->> processes-scheduled-parts
-(filter #(= (:process-id %)
-(:process-id the-process)))
+        processes-scheduled-parts (scheduled-processes-parts @scheduled-ref)
+        the-process-scheduled-parts (->> processes-scheduled-parts
+                                         (filter #(= (:process-id %)
+                                                     (:process-id the-process)))
                                          (first))]
 ;;=> Here we prepare the processes scheduled parts and take only
 ;; the relevant to the particular 'process-id'.
     (if-let [the-instr-to-fire-id (find-inst-to-be-fired-in-process @locks-ref
-                                   (:process-id the-process)
-                                   the-process-instrs
-                                   the-process-scheduled-parts )]
+                                                                    (:process-id the-process)
+                                                                    the-process-instrs
+                                                                    the-process-scheduled-parts )]
 ;;=> If there is one instruction in "process-id" to be fired;
       (dosync
 ;;=> We use the refs, because we need to do transactions involving
@@ -166,16 +157,16 @@ the-process-scheduled-parts (->> processes-scheduled-parts
 ;;=> We compute the index of the instruction; or we set it at 0
 ;; if it is not found, which means it is the first time it is
 ;; scheduled.
-                 times-in-inst-in-p-in-scheduled (get
-                                                  (get (p-in-scheduled
-                                                        :instructions)
-                                                       idx-inst-in-p-in-scheduled) :times )
+             times-in-inst-in-p-in-scheduled (get
+                                              (get (p-in-scheduled
+                                                    :instructions)
+                                                   idx-inst-in-p-in-scheduled) :times )
 ;;=> We get the times vector in "scheduled" related to this
-                 ;; instruction
-                 _ (alter scheduled-ref assoc-in [idx-p-in-scheduled
-                                                  :instructions idx-inst-in-p-in-scheduled :times]
-                          (conj times-in-inst-in-p-in-scheduled
-                                quantum))])
+;; instruction
+             _ (alter scheduled-ref assoc-in [idx-p-in-scheduled
+                                              :instructions idx-inst-in-p-in-scheduled :times]
+                      (conj times-in-inst-in-p-in-scheduled
+                            quantum))])
 ;;=> And using assoc-in, with indices and keys as a "path
 ;;   vector", we Update the "scheduled" ref with times vector
 ;;   to which we  Append the current "quantum".
