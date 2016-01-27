@@ -214,29 +214,20 @@
     (cycle procs-pattern)))
 ;;=> Generates an infinite sequence like we described above.
 
-(defn process-sequential-time
-  [a-process]
-  (let [instructions (a-process :instructions)
-        inst-types (map :inst-type instructions)
-        lengths (map #(get insts-effort %) inst-types)]
-    (reduce + lengths)))
-;;=> We get instruction-types, grab the efforts from the "insts-
-;; effort"
-;;   map and sum them all up using reduce.
+(defn total-time [processes]
+  (->> (ps->is processes)
+       (map :inst-type)
+       (map insts-effort)
+       (reduce +)
+       (* 2)))
 
-(defn schedule-programs
-  [language programs]
-;;=> programs are maps : {:program "the textual program",
-;;  :process-id the-process-id
-;;  :priority the-process-priority }
+(defn schedule-programs [language programs]
   (let [processes (into [] (map #(fire-a-process language
                                                  (:program %)
                                                  (:process-id %)
                                                  (:priority %))
                                 programs))
-;;=> Processes are constructed
-        timeout (* 2 (reduce + (map process-sequential-time
-                                    processes)))
+        timeout (total-time processes)
 ;;=> "timeout" is the total length of all processes executed one
 ;;   after the other.
         locks (ref (prepare-locks processes))
