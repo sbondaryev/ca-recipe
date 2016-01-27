@@ -54,7 +54,7 @@
 (defn all-lock-indices [instructions]
   (->> instructions
        (filter #(= (:inst-type %) :lock))
-       (map #({:lock-id (% :inst-id), :lock-idx (.indexOf instructions %)}))))
+       (map #(hash-map :lock-id (% :inst-id) :lock-idx (.indexOf instructions %)))))
 
 (defn the-locks-inst-depends-on
   [instructions instruction]
@@ -75,10 +75,13 @@
        (some #(and (not= process-id ((get locks %) :locker))
                    ((get locks %) :locked)))))
 
-(defn scheduled-processes-parts [scheduled]
-  (map #(assoc-in
-         % [:instructions :count]
-         (count (get-in % [:instructions :times]))) scheduled))
+(defn add-count [instructions]
+  (vec (map #(dissoc (assoc % :count (count (% :times))) :times) instructions)))
+
+
+(defn scheduled-processes-parts[scheduled]
+  (vec (map #(update % :instructions add-count) scheduled)))
+
 
 (defn incomplete-instruction? [instruction-w-count]
   (let [instr-effort (insts-effort (instruction-w-count :inst-type))
