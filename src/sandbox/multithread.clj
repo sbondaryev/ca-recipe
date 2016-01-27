@@ -5,6 +5,12 @@
 
 (def p pprint)
 
+(defn p->i [{:keys [instructions] :as process}]
+  (map #(merge (dissoc process :instructions) %) instructions))
+
+(defn ps->is [processes]
+  (mapcat p->i processes))
+
 (def r3-language
 "S = INSTRS
   INSTRS = ((INSTR | LOCKED-INSTRS) <optional-whitespace>)*
