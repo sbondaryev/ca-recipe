@@ -196,21 +196,12 @@
 ;;=> We prepare "scheduled" as being the same thing as the
 ;;   "processes" map
 ;;   with empty ":times" vectors added.
-(defn prepare-locks-for-a-p
-  [a-process]
-  (let [locks (filter #(= (:inst-type %) :lock )
-                      (:instructions a-process))]
-    (reduce (partial apply unlock) {} (map (fn [l] [(:process-id
-                                                     a-process)
-                                                    (:inst-id l)])
-                                           locks))))
-;;=> A helper function that will prepare "locks" set to false for
-;;   instructions related to a process"
-(defn prepare-locks
-  [processes]
-  (reduce merge (map prepare-locks-for-a-p processes)))
-;;=> Applying "prepare-locks-for-a-p", we generate locks for all
-;;   processes  that would run concurrently.
+
+(defn prepare-locks [processes]
+  (->> (ps->is processes)
+       (filter #(= (:inst-type %) :lock))
+       (map #((juxt :process-id :inst-id) %))
+       (reduce (partial apply unlock) {} )))
 
 (defn gen-processes-cycles
   [processes]
