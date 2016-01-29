@@ -192,26 +192,16 @@
 (defn prepare-scheduled [processes]
   (vec (map #(update % :instructions add-times) processes)))
 
-;;=> We prepare "scheduled" as being the same thing as the
-;;   "processes" map
-;;   with empty ":times" vectors added.
-
 (defn prepare-locks [processes]
   (->> (ps->is processes)
        (filter #(= (:inst-type %) :lock))
        (map #((juxt :process-id :inst-id) %))
        (reduce (partial apply unlock) {} )))
 
-(defn gen-processes-cycles
-  [processes]
-  (let [sorted-procs-by-prio (sort-by :priority > processes)
-        procs-pattern (mapcat #(repeat (:priority %)
-                                       %)
-                              sorted-procs-by-prio)]
-    ;;=> A pattern is a single repetition "priority" times of each
-    ;;   process
-    (cycle procs-pattern)))
-;;=> Generates an infinite sequence like we described above.
+(defn gen-processes-cycles [processes]
+  (->> (sort-by :priority > processes)
+       (mapcat #(repeat (:priority %) %))
+       (cycle)))
 
 (defn total-time [processes]
   (->> (ps->is processes)
