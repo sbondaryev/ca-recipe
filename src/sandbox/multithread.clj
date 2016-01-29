@@ -84,7 +84,7 @@
 (defn add-count [instructions]
   (vec (map #(dissoc (assoc % :count (count (% :times))) :times) instructions)))
 
-
+;;TODO replace by update-process-instructions
 (defn scheduled-processes-parts[scheduled]
   (vec (map #(update % :instructions add-count) scheduled)))
 
@@ -185,14 +185,13 @@
       false)))
 ;; => Else we issue "false".
 
-(defn prepare-scheduled
-  [processes]
-  (into []  (->> processes
-                 (map (fn[p] {:process-id (:process-id p)
-                              :instructions (into []
-                                                  (->> (:instructions p)
-                                                       (map (fn [i] (assoc i
-                                                                           :times [])))))})))))
+(defn add-times [instructions]
+  (vec (map #(assoc % :times []) instructions)))
+
+;;TODO replace by update-process-instructions
+(defn prepare-scheduled [processes]
+  (vec (map #(update % :instructions add-times) processes)))
+
 ;;=> We prepare "scheduled" as being the same thing as the
 ;;   "processes" map
 ;;   with empty ":times" vectors added.
