@@ -50,7 +50,7 @@
   medium-op op3;
  unlock l1;")
 
-(defn fire-a-process [grammar program process-id priority]
+(defn fire-process [grammar program process-id priority]
   {:process-id process-id
    :instructions (flatten (gen-program (insta/parser grammar) program))
    :priority priority})
@@ -210,21 +210,19 @@
        (reduce +)
        (* 2)))
 
+(defn parse-processes [language programs]
+  (vec (map #(fire-process language
+                             (:program %)
+                             (:process-id %)
+                             (:priority %))
+            programs)))
+
 (defn schedule-programs [language programs]
-  (let [processes (into [] (map #(fire-a-process language
-                                                 (:program %)
-                                                 (:process-id %)
-                                                 (:priority %))
-                                programs))
+  (let [processes (parse-processes language programs)
         timeout (total-time processes)
-;;=> "timeout" is the total length of all processes executed one
-;;   after the other.
         locks (ref (prepare-locks processes))
         scheduled (ref (prepare-scheduled processes))
         processes-cycles  (gen-processes-cycles processes)]
-;;=> We prepare "locks" and "scheduled" refs, and the weighted
-;;   process repetitions that the scheduler will have to cycle
-;;   through
     (loop [quantum 0
            remaining-processes processes-cycles]
 ;;=> We loop
