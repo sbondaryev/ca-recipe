@@ -276,3 +276,20 @@ mapcat list
        (map (fn [[k v]] [k (reduce f (map second v))]))
        (into {})))
 
+;;70 Word Sorting
+(defn g [str] (sort-by #(.toLowerCase %) (re-seq #"\w+" str)))
+
+;;71 Rearranging Code: ->
+last
+
+;;72 Rearranging Code: ->>
+apply +
+
+;;73 Analyze a Tic-Tac-Toe Board
+(defn f [xo]
+  (let [d #(for [i (range 0 3)] (get-in (vec %) [i i]))
+        ox (apply mapv vector xo)]
+    (->> (concat xo ox [(d xo) (d (reverse xo))])
+         (map set)
+         (some #{#{:x} #{:o}})
+         (first))))
