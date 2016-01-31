@@ -96,8 +96,8 @@
               (recur result (-> loc z/next)))
             (recur result (-> loc z/next))))))))
 
-(defn a-call-stack [a-call]
-  (let [zpr (z/vector-zip a-call)]
+(defn call-stack [call]
+  (let [zpr (z/vector-zip call)]
            (loop [result []
                   loc (-> zpr z/down)]
              (if (-> loc z/end?)
@@ -111,9 +111,7 @@
        result)
                         (-> loc z/next)))))))
 
-(defn program-call-stack
-  [prog]
-  (into []
-        (map a-call-stack
-             (expand-to-primitive-calls prog))))
+(defn program-call-stack [prog]
+  (->> (expand-to-primitive-calls prog)
+       (mapv call-stack)))
 
