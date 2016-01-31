@@ -62,13 +62,12 @@
        (filter #(= (:inst-type %) :lock))
        (map #(hash-map :lock-id (% :inst-id) :lock-idx (.indexOf instructions %)))))
 
-(defn the-locks-inst-depends-on
+(defn locks-inst-depends-on
   [instructions instruction]
-  (let [the-inst-idx (.indexOf instructions instruction)]
+  (let [inst-idx (.indexOf instructions instruction)]
     (->> (all-lock-indices instructions)
-         (filter #(> the-inst-idx (:lock-idx %) ))
-         (map :lock-id)
-         (into []))))
+         (filter #(> inst-idx (:lock-idx %) ))
+         (mapv :lock-id))))
 
 (defn lock [locks process-id lock-id]
   (assoc locks lock-id {:locker process-id :locked true}))
@@ -77,7 +76,7 @@
   (assoc locks lock-id {:locker process-id :locked false}))
 
 (defn is-locked? [process-id instructions locks instruction]
-  (->> (the-locks-inst-depends-on instructions instruction)
+  (->> (locks-inst-depends-on instructions instruction)
        (some #(and (not= process-id ((get locks %) :locker))
                    ((get locks %) :locked)))))
 
@@ -154,10 +153,10 @@
 
 
 (defn add-times [instructions]
-  (vec (map #(assoc % :times []) instructions)))
+  (mapv #(assoc % :times []) instructions))
 
 (defn prepare-scheduled [processes]
-  (vec (map #(update % :instructions add-times) processes)))
+  (mapv #(update % :instructions add-times) processes))
 
 (defn prepare-locks [processes]
   (->> (ps->is processes)
@@ -178,11 +177,11 @@
        (* 2)))
 
 (defn parse-processes [language programs]
-  (vec (map #(fire-process language
+  (mapv #(fire-process language
                              (:program %)
                              (:process-id %)
                              (:priority %))
-            programs)))
+            programs))
 
 (defn schedule-programs [language programs]
   (let [processes (parse-processes language programs)
@@ -192,7 +191,7 @@
         processes-cycles  (gen-processes-cycles processes)]
     (loop [quantum 0
            remaining-processes processes-cycles]
-      (if (and (more-incomplete-processes? (scheduled-processes-parts @scheduled))
+      (if (and (more-incomplete-processes? @scheduled)
                (< quantum timeout))
         (do
           (progress-on-process! locks scheduled
