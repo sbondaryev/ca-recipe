@@ -11,7 +11,7 @@
 (defn ps->is [processes]
   (mapcat p->i processes))
 
-(def r3-language
+(def language
 "S = INSTRS
   INSTRS = ((INSTR | LOCKED-INSTRS) <optional-whitespace>)*
   INSTR = HEAVY-OP | MEDIUM-OP | LIGHT-OP
