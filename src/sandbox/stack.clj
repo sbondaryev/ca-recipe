@@ -32,8 +32,7 @@
           FN-SEP = <optional-whitespace> ';' <optional-whitespace>
           PARAMS-SEP = <optional-whitespace> ',' <optional-whitespace>")
 
-(defn gen-program
-  [parser program]
+(defn gen-program [parser program]
   (into [] (insta/transform
             {:S (fn [ & args] args)
              :FN-CALL (fn [fn-id params] [:FN-CALL
@@ -47,28 +46,23 @@
              :FN-DECL-BODY (fn [& body] (into [] body))}
             (parser program))))
 
-(defn get-fn-decls
-  [program]
+(defn get-fn-decls [program]
   (->> program
        (filter #(= :FN-DECL (get % 0)))
        (into [])))
 
-(defn get-instructions
-  [program]
+(defn get-instructions [program]
   (->> program
        (filter #(not= :FN-DECL (get % 0)))
        (into [])))
 
-(defn get-fn-id-decl
-  [fn-decls fn-id]
+(defn get-fn-id-decl [fn-decls fn-id]
   (->> fn-decls
        (filter #(= (get % 1)
                    fn-id))
        (first)))
 
-
-(defn call-fn
-  [fn-decl fn-call]
+(defn call-fn [fn-decl fn-call]
   (let [decl-args-list (fn-decl 2)
         decl-body (fn-decl 3)
         fn-call-params (fn-call 2)]
@@ -98,18 +92,18 @@
 
 (defn call-stack [call]
   (let [zpr (z/vector-zip call)]
-           (loop [result []
-                  loc (-> zpr z/down)]
-             (if (-> loc z/end?)
-               result
-               (let [current-node (-> loc z/node)]
-                 (recur (if (and
-                             (not (vector? current-node))
-                             (not= :FN-CALL current-node)
-                             (not= :ID current-node))
-                          (conj result {(-> loc z/left z/node) current-node})
-       result)
-                        (-> loc z/next)))))))
+    (loop [result []
+           loc (-> zpr z/down)]
+      (if (-> loc z/end?)
+        result
+        (let [current-node (-> loc z/node)]
+          (recur (if (and
+                      (not (vector? current-node))
+                      (not= :FN-CALL current-node)
+                      (not= :ID current-node))
+                   (conj result {(-> loc z/left z/node) current-node})
+                   result)
+                 (-> loc z/next)))))))
 
 (defn program-call-stack [prog]
   (->> (expand-to-primitive-calls prog)
