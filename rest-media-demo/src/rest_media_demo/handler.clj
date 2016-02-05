@@ -8,6 +8,10 @@
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [clojure.data.json :as json]))
 
+(def default-media-types
+  ["application/json"
+   "text/plain"
+   "text/html"])
 (defroutes app-routes
   (GET "/" [] "Hello World")
   (route/not-found "Not Found"))
