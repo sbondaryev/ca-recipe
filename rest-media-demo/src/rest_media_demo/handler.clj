@@ -12,6 +12,10 @@
   ["application/json"
    "text/plain"
    "text/html"])
+
+(defmethod render-map-generic "application/json" [data context]
+  (json/write str (conj (:links data) (:properties data) )))
+
 (defroutes app-routes
   (GET "/" [] "Hello World")
   (route/not-found "Not Found"))
