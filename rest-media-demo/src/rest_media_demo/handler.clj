@@ -16,6 +16,15 @@
 (defmethod render-map-generic "application/json" [data context]
   (json/write str (conj (:links data) (:properties data) )))
 
+(defmethod render-map-generic "text/html" [data context]
+  (html [:div
+         [:h1 (-> data :class first)]
+         [:dl
+          (mapcat (fn [[key value]] [[:dt key] [:dd value]])
+                  (:properties data))]]))
+
+(defrecord Coffee [name price])
+
 (defroutes app-routes
   (GET "/" [] "Hello World")
   (route/not-found "Not Found"))
