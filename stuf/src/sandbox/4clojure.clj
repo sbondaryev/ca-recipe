@@ -314,3 +314,8 @@ apply +
 ;;                       (filter 
 ;;                        #(-> % Integer. Math/sqrt (rem 1) zero?)
 ;;                        (re-seq #"\d+" s))))
+
+;;75 Euler's Totient Function
+(defn f [num]
+  (let [gcd #(loop [n % d %2] (if (zero? d) n (recur d (mod n d))))]
+    (count (filter #(= (gcd num %) 1) (range num)))))
