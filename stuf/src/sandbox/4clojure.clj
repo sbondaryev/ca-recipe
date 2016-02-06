@@ -293,3 +293,19 @@ apply +
          (map set)
          (some #{#{:x} #{:o}})
          (first))))
+
+;;74 Filter Perfect Squares
+(defn f [str]
+  (let [xs (map read-string (re-seq #"\d+" str))]
+    (->> (map #(Math/sqrt %) xs)
+         (map int)
+         (map #(* % %))
+         (#(filter (set %) xs))
+         (clojure.string/join ","))))
+
+;;wow solution
+;;(fn [s]
+;;  (clojure.string/join "," 
+;;                       (filter 
+;;                        #(-> % Integer. Math/sqrt (rem 1) zero?)
+;;                        (re-seq #"\d+" s))))
