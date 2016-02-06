@@ -14,7 +14,7 @@
    "text/html"])
 
 (defmethod render-map-generic "application/json" [data context]
-  (json/write str (conj (:links data) (:properties data) )))
+  (json/write-str (conj (:links data) (:properties data) )))
 
 (defmethod render-map-generic "text/html" [data context]
   (html [:div
@@ -25,8 +25,41 @@
 
 (defrecord Coffee [name price])
 
+(def restretto
+  (->Coffee "Ristretto" "$1.80"))
+(def macchiato
+  (->Coffee "Macchiato" "$1.80"))
+(def latte
+  (->Coffee "Caffe Latte" "$3.20"))
+
+(def coffees [latte macchiato restretto])
+
+(defn index-data [ctx]
+  coffees)
+
+(defresource index
+  :allowed-methods [:options :get :post :delete]
+  :available-media-types default-media-types
+  :handle-ok index-data)
+
+(defresource coffe [id]
+  :allowed-methods [:options :get]
+  :available-media-types ["text/html" "application/json"]
+  :handle-ok (fn [_]
+               {:properties
+                (nth coffees (Integer/parseInt id))
+                :links [{:rel ["self"]
+                         :href (str "/coffees/" id)}
+                        {:rel ["listing"]
+                         :href "/coffees"}]}))
+
 (defroutes app-routes
-  (GET "/" [] "Hello World")
+  (OPTIONS "/" [] {:headers {"Allow:" "GET, POST, DELETE, OPTIONS"}})
+  (ANY "/" [] index)
+  (ANY "/coffees" [] index)
+  (OPTIONS "/coffees/:id" [] {:headers {"Allow:" "GET, OPTIONS"}})
+  (ANY "/coffees/:id" [id] (coffe id))
+  (route/resources "/")
   (route/not-found "Not Found"))
 
 (def app
