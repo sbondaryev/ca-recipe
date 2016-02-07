@@ -322,3 +322,12 @@ apply +
 
 ;;76 Intro to Trampoline
 [1 3 5 7 9 11]
+
+;;77 Anagram Finder
+(defn f[xs]
+  (->> (group-by sort xs)
+       (vals)
+       (filter #(> (count %) 1))
+       (map set)
+       (set)))
+;;#(->> % (group-by sort) vals (filter second) (map set) set)
