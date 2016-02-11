@@ -17,13 +17,17 @@
           (.getResponseText response))))
 
 (defn post [url content]
+  (println content)
   (xhr/send url receiver "POST" content))
 
 (defn ^:export main [& _]
   (println "starting!")
   (post "/4459"
-        (query-data/createFromMap
-         (structs/Map. (clj->js (:mykey
-                                 (.-value (dom/getElement "returnVal")))))))
+        (->>  (dom/getElement "returnVal")
+              (.-value)
+              (hash-map :mykey)
+              (clj->js)
+              (structs/Map.)
+              (query-data/createFromMap)))
   (println "done"))
 
