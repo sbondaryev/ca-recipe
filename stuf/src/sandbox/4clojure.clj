@@ -333,7 +333,8 @@ apply +
 ;;#(->> % (group-by sort) vals (filter second) (map set) set)
 
 ;;78 Reimplement Trampoline
-(def f #(loop [res (apply % %&)]
+#(loop [res (apply % %&)]
    (if (fn? res)
-     (recur (g))
+     (recur (res))
+     res))
 
