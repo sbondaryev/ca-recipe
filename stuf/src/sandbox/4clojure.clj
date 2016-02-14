@@ -338,3 +338,15 @@ apply +
      (recur (res))
      res))
 
+;;79 Triangle Minimal Path
+(letfn
+  [(make-path [[node & tri] path]
+    (if (seq tri)
+      (->> [(map rest tri) (map drop-last tri)]
+           (mapcat #(make-path % (concat path node))))
+      [(concat path node)]))]
+  (fn [tri]
+    (->> (make-path tri [])
+         (map #(apply + %))
+         (apply min))))
+
