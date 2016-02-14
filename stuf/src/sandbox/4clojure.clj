@@ -350,3 +350,10 @@ apply +
          (map #(apply + %))
          (apply min))))
 
+;;80 Perfect Numbers
+(defn f [n]
+  (->> (range 1 n)
+       (filter #(zero? (mod n %)))
+       (apply +)
+       (= n)))
+
