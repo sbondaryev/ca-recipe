@@ -3,7 +3,8 @@
             [io.pedestal.http.route :as route]
             [io.pedestal.http.body-params :as body-params]
             [io.pedestal.http.route.definition :refer [defroutes]]
-            [ring.util.response :as ring-resp]))
+            [ring.util.response :as ring-resp]
+            [clojure.java.io :as io]))
 
 (defn about-page
   [request]
@@ -11,15 +12,18 @@
                               (clojure-version)
                               (route/url-for ::about-page))))
 
-(defn home-page
+(defn index-page
   [request]
-  (ring-resp/response "Hello World!"))
+  (assoc-in (ring-resp/response (io/input-stream (io/file
+                                                  "resources/public/index.html")))
+            [:headers "Content-Type"]
+            "text/html"))
 
 (defroutes routes
   ;; Defines "/" and "/about" routes with their associated :get handlers.
   ;; The interceptors defined after the verb map (e.g., {:get home-page}
   ;; apply to / and its children (/about).
-  [[["/" {:get home-page}
+  [[["/" {:get index-page}
      ^:interceptors [(body-params/body-params) bootstrap/html-body]
      ["/about" {:get about-page}]]]])
 
