@@ -357,3 +357,9 @@ apply +
        (apply +)
        (= n)))
 
+;;81 Set Intersection
+(defn f [s1 s2]
+  (set (filter #(some (hash-set %) s2) s1)))
+;;wow solution
+;;(fn [s1 s2] (set (filter s1 s2)))
+
