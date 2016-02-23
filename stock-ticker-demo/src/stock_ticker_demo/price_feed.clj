@@ -12,3 +12,28 @@
                 "AMZN" {:max-price 274.1 :min-price 42.7
                         :wavelength 45 :starting-point 0.25
                         :eps 1.15}})
+
+(def stock-codes (keys stock-map))
+
+(defn time-model
+  "Model the price of a stock on sine wave"
+  [time-secs stock-map]
+  (let [max-price (:max-price stock-map)
+        min-price (:min-price stock-map)
+        wavelength (:wavelength stock-map)
+        med-price (+ (/ (- max-price min-price) 2) min-price)
+        amplitude (- max-price med-price)
+        starting-point (:starting-point stock-map)]
+    (+ (* (Math/sin (- (/ (* Math/PI time-secs) wavelength)
+                       (* Math/PI starting-point wavelength)))
+          amplitude)
+       med-price)))
+
+(defn curr-price
+  "Given a stock price - get a price for the current point in time"
+  [stock-code]
+  (format "%.2f"
+          (time-model
+           (/ (java.lang.System/currentTimeMillis) 60)
+           (stock-map stock-code))))
+
