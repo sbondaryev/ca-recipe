@@ -40,7 +40,7 @@
      es.onmessage = function(e) {console.log("message without type " + e.data + "\n")};
 
      //Listen  for message type price
-     en.addEventListener('price', function(e) {
+     es.addEventListener('price', function(e) {
          console.log("e.data = " + e.data);
          var priceinfo = $.parseJSON(e.data);
          console.log("priceinfo json object = " + priceinfo);
@@ -51,8 +51,8 @@
 
      function clickButton(stockCode) {
          $("#"+stockCode+"-BTN").click(function() {
-             var orderinfo = {"stock-code":stockCode, "price": $("#"+stockCode).text()};
-             var orderJson = JSON.stringify(orderinfo);
+             var orderJSON = {"stock-code":stockCode, "price": $("#"+stockCode).text()};
+             var orderJSON = JSON.stringify(orderJSON);
              console.log("orderJSON: " + orderJSON);
              $.post( '/prices', { order : orderJSON });
          });
@@ -65,4 +65,4 @@
 
     </script>
   </body>
-</html> 
+</html>
