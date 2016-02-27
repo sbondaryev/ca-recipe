@@ -255,7 +255,7 @@ mapcat list
     [[:a 1] [:a 2]] :vector
     [[:a 2] [:a 1]] :list
     #{[:a 2] [:a 1]} :set))
-    
+
 ;;66 Greatest Common Divisor
 (defn f[a b] (some #(if (every? integer? %) (first %)) (for [k (range (min a b) 0 -1)] [k (/ (min a b) k) (/ (max a b) k)])))
 ;; wow solution
@@ -310,8 +310,8 @@ apply +
 
 ;;wow solution
 ;;(fn [s]
-;;  (clojure.string/join "," 
-;;                       (filter 
+;;  (clojure.string/join ","
+;;                       (filter
 ;;                        #(-> % Integer. Math/sqrt (rem 1) zero?)
 ;;                        (re-seq #"\d+" s))))
 
@@ -340,11 +340,11 @@ apply +
 
 ;;79 Triangle Minimal Path
 (letfn
-  [(make-path [[node & tri] path]
-    (if (seq tri)
-      (->> [(map rest tri) (map drop-last tri)]
-           (mapcat #(make-path % (concat path node))))
-      [(concat path node)]))]
+    [(make-path [[node & tri] path]
+       (if (seq tri)
+         (->> [(map rest tri) (map drop-last tri)]
+              (mapcat #(make-path % (concat path node))))
+         [(concat path node)]))]
   (fn [tri]
     (->> (make-path tri [])
          (map #(apply + %))
@@ -363,3 +363,12 @@ apply +
 ;;wow solution
 ;;(fn [s1 s2] (set (filter s1 s2)))
 
+
+;;82
+(defn f [s1 s2]
+  (let [d (- (count s1) (count s2))]
+    (cond
+      (= d 0) (= 1 (count (remove identity (map #(= %1 %2) s1 s2))))
+      (= d -1) (= (filter (set s1) s2) (seq s1))
+      (= d 1) (recur s2 s1)
+      :else false)))
