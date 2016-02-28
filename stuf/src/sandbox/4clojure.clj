@@ -372,3 +372,10 @@ apply +
       (= d -1) (= (filter (set s1) s2) (seq s1))
       (= d 1) (recur s2 s1)
       :else false)))
+
+(defn g [xs]
+  (->>
+   (for [s1 xs s2 xs] [s1 s2])
+   (filter #(apply f %))
+   (reduce #(update-in %1 [(first %2)] conj (second %2)) {})))
+
