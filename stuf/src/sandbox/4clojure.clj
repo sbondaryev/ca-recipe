@@ -400,4 +400,7 @@ apply +
      (some #(= (count %) (count st)))
      (= true))))
 
-
+;;83 A Half-Truth
+#(< 1 (count(distinct %&)))
+;;wow solution
+;;not=
