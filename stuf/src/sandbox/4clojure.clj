@@ -364,18 +364,40 @@ apply +
 ;;(fn [s1 s2] (set (filter s1 s2)))
 
 
-;;82
-(defn f [s1 s2]
-  (let [d (- (count s1) (count s2))]
-    (cond
-      (= d 0) (= 1 (count (remove identity (map #(= %1 %2) s1 s2))))
-      (= d -1) (= (filter (set s1) s2) (seq s1))
-      (= d 1) (recur s2 s1)
-      :else false)))
+;;82 Word Chains
+(letfn
+    [
+     (cmp [s1 s2]
+       (let [d (- (count s1) (count s2))]
+         (cond
+           (= d 0) (= 1 (count (remove identity (map #(= %1 %2) s1 s2))))
+           (= d -1) (= (filter (set (filter (set s1) s2)) s1) (seq s1))
+           (= d 1) (recur s2 s1)
+           :else false)))
+     
+     (tree [xs]
+       (->>
+        (for [s1 xs s2 xs] [s1 s2])
+        (filter #(apply cmp %))
+        (reduce #(update-in %1 [(first %2)] conj (second %2)) {})))
+     
+     (r1 [ks path result xs]
+       (if (seq ks)
+         (r1 (rest ks) path (r2 (first ks) path result xs) xs)
+         result))
+     
+     (r2 [k path result xs]
+       (cond
+         ((set path) k) (conj result path)
+         (xs k) (r1 (xs k) (conj path k) result xs)
+         :else (conj result (conj path k))))]
+  
+  (defn f[st]
+    (->>
+     (tree st)
+     (r1 st [] [])
+     (distinct)
+     (some #(= (count %) (count st)))
+     (= true))))
 
-(defn g [xs]
-  (->>
-   (for [s1 xs s2 xs] [s1 s2])
-   (filter #(apply f %))
-   (reduce #(update-in %1 [(first %2)] conj (second %2)) {})))
 
