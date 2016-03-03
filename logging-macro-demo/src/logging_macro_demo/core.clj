@@ -24,6 +24,36 @@
   [pred coll]
   (keep-indexed #(when (pred %2) %1) coll))
 
+(defmacro my-debug
+  "Call with function definition and this will add logging to the start and end."
+  [arg]
+  (let [param-index (first (indices vector? arg))
+        first-half (take (inc param-index) arg)
+        body (drop (inc param-index) arg)
+        func-name (second arg)
+        params (nth arg param-index)
+        new-print-arg-statement `(println (str "(" '~func-name " " ~params ")"))
+        last-statement (take-last 1 body)
+        body-remainder (drop-last 1 body)
+        print-last-statement `(println (str '~func-name " result: " ~(first last-statement)))
+        new-function (concat first-half
+                             (list new-print-args-statement)
+                             body-remainder
+                             (list print-last-statement)
+                             last-statement)]
+    `(do
+       (println "param-index: " ~param-index)
+       (println "first-half: " ~first-half)
+       (println "body: " '~func-name)
+       (println "func-name: " '~func-name)
+       (println "params: " '~params)
+       (println "new-print-statement: " '~new-print-args-statement)
+       (println "last-statement: " (first '~last-statement))
+       (println "body-remainder: " ~body-remainder)
+       (println "print-last-statement: " '~print-last-statement)
+       (println "new-functoin: " '~new-function)
+       (eval '~new-function))))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
