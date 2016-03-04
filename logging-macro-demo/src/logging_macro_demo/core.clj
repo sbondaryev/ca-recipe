@@ -54,6 +54,25 @@
        (println "new-functoin: " '~new-function)
        (eval '~new-function))))
 
+(defmacro my-debug-sm
+  "Call with a function definition and this will add logging to the start and end."
+  [arg]
+  (let [param-index (first (indices vector? arg))
+        first-half (take (inc param-index) arg)
+        body (drop (inc param-index) arg)
+        func-name (second arg)
+        params (nth arg param-index)
+        new-print-args-statement `(println (str "(" '~func-name " " ~params ")"))
+        last-statement (take-last 1 body)
+        body-remainder (drop-last 1 body)
+        print-last-statement `(println (str '~func-name " result: " ~(first last-statement)))
+        new-function (concat first-half
+                             (list new-print-args-statement)
+                             body-remainder
+                             (list print-last-statement)
+                             last-statement)]
+    `(do
+       (eval '~new-function))))
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
