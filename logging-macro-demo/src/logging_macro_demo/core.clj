@@ -73,7 +73,24 @@
                              last-statement)]
     `(do
        (eval '~new-function))))
+
+(my-debug-sm
+ (defn apply-interest
+  "Compound interest formula."
+   [years interest-rate input-balance]
+   (* input-balance (math/expt (+ 1 (float interest-rate)) years))))
+
+(my-debug-sm
+ (defn round-and-format
+  "Set decimal places and currency formatting."
+   [val]
+   (format-currency (round val 2))))
+
+(def apply-interest-curry (partial apply-interest 1 0.4))
+
 (defn -main
-  "I don't do a whole lot ... yet."
+  "Run the macro demo for function logging by a syntax tree walk."
   [& args]
-  (println "Hello, World!"))
+  (println (add-meaning 1))
+  (println (map round-and-format
+                (map apply-interest-curry balances))))
