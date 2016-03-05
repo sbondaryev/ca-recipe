@@ -16,7 +16,7 @@
   Clojurewerkz/Joda currency library."
   [input] (mf/format (amount-of USD (round input 2))))
 
-(def balance [3367.01 7839.76 326478.01 23479.15])
+(def balances [3367.01 7839.76 326478.01 23479.15])
 
 (defn indices
   "Given a predicate function and a collection, return a list of collection
@@ -32,7 +32,7 @@
         body (drop (inc param-index) arg)
         func-name (second arg)
         params (nth arg param-index)
-        new-print-arg-statement `(println (str "(" '~func-name " " ~params ")"))
+        new-print-args-statement `(println (str "(" '~func-name " " ~params ")"))
         last-statement (take-last 1 body)
         body-remainder (drop-last 1 body)
         print-last-statement `(println (str '~func-name " result: " ~(first last-statement)))
@@ -44,7 +44,7 @@
     `(do
        (println "param-index: " ~param-index)
        (println "first-half: " ~first-half)
-       (println "body: " '~func-name)
+       (println "body: " '~body)
        (println "func-name: " '~func-name)
        (println "params: " '~params)
        (println "new-print-statement: " '~new-print-args-statement)
@@ -53,6 +53,8 @@
        (println "print-last-statement: " '~print-last-statement)
        (println "new-functoin: " '~new-function)
        (eval '~new-function))))
+
+(my-debug (defn add-meaning "Douglas Adams reference" [arg] (+ 42 arg)))
 
 (defmacro my-debug-sm
   "Call with a function definition and this will add logging to the start and end."
