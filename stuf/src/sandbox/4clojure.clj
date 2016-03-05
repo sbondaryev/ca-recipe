@@ -429,3 +429,11 @@ apply +
 ;;       r
 ;;       (recur r'))))
 
+;;85 Power Set
+(defn f [xs]
+  (reduce (fn [sets x]
+            (->> sets
+                 (map #(conj % x))
+                 (into sets)))
+          #{#{}} xs))
+
