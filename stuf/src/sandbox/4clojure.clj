@@ -404,3 +404,28 @@ apply +
 #(< 1 (count(distinct %&)))
 ;;wow solution
 ;;not=
+
+;;84 Transitive Closure
+(letfn
+    [(grp [xs n]
+       (->>
+        (filter #(= n (first %)) xs)
+        (mapcat #(grp xs (second %)))
+        (cons n)))
+     (pair [xs]
+       (map #(vector (first xs) %) (rest xs)))]
+  (defn g [xs]
+    (->>
+     (map #(grp xs (first %)) xs)
+     (reduce #(concat %1 (pair %2)) [])
+     (set))))
+;;wow solution
+;; (fn [r]
+;;   (let [r' (into r
+;;                  (for [[a b] r
+;;                        [c d] r :when (= b c)]
+;;                    [a d]))]
+;;     (if (= r r')
+;;       r
+;;       (recur r'))))
+
