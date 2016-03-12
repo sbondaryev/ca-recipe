@@ -446,3 +446,8 @@ apply +
         (seen n) false
         :else (recur (reduce #(+ %1 (* %2 %2)) 0 (digits n))
                      (conj seen n))))))
+
+;;88 Symmetric Difference
+#(clojure.set/union
+  (clojure.set/difference %1 %2)
+  (clojure.set/difference %2 %1))
