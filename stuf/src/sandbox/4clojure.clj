@@ -437,3 +437,12 @@ apply +
                  (into sets)))
           #{#{}} xs))
 
+;;86 Happy numbers
+(letfn [(digits[n] (map #(- (int %) (int \0)) (str n)))]
+  (defn happy? [n]
+    (loop [n n seen #{}]
+      (cond
+        (= n 1) true
+        (seen n) false
+        :else (recur (reduce #(+ %1 (* %2 %2)) 0 (digits n))
+                     (conj seen n))))))
