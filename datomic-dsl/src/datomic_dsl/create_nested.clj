@@ -13,4 +13,16 @@
      (if (map? x)
        (into {} children)
        (assoc x 1 (into () children))))
-     m))
+   m))
+
+(defn dsl-zipper
+  "Given a dsl, return a zipper so its nested nodes can be walked with a HOF like map."
+  [dsl]
+  (map-zip dsl))
+
+;;http://josf.info/blog/2014/04/14/seqs-of-clojure-zippers/
+(defn zip-nodes
+  "Returns all nodes in loc."
+  [loc]
+  (take-while (complement zip/end?) ; take until the :end
+              (iterate zip/next loc)))
