@@ -26,3 +26,31 @@
   [loc]
   (take-while (complement zip/end?) ; take until the :end
               (iterate zip/next loc)))
+
+(defn create-schema-nested-fn
+  "When mapped onto a zipped node of a nested schema dsl, create corresponding dsl entity syntax."
+  [schema-name zipped-node]
+  (if (= (type (zip/node zipped-node)) clojure.lang.MapEntiry)
+    (let [elem (zip/node zipped-node)
+          attr-key (key elem)
+          attr-val (val elem)
+          has-parent (not (nil? (zip/up (zip/up zipped-node))))
+          parent (if has-parent (first (zip/node (zip/up zipped-node))) schema-name)
+          is-nested (map? attr-val)
+          first-val-val (if is-nested :db.type/ref (keyword "db.type" attr-val))
+          doco (str "A " parent "'s " attr-key)]
+      {:db/id (d/tempid :db.part/db)
+       :db/ident (keyword parent attr-key)
+       :db/valueType first-val-val
+       :db/cardinality :db.cardinality/one
+       :db/doc doco
+       :db/install/_attribute :db.part/db})))
+
+(defn create-schema-nested
+  "Given a schema map name and a dsl input, return Datomic syntax for creating
+  nested schema entities."
+  [schema-name dsl]
+  (filter (comp not nil?)
+          (map #(create-schema-nested-fn schema-name %)
+               (zip-nodes (dsl-zipper dsl)))))
+  
