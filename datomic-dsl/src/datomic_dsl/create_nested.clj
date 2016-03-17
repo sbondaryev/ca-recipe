@@ -53,4 +53,3 @@
   (filter (comp not nil?)
           (map #(create-schema-nested-fn schema-name %)
                (zip-nodes (dsl-zipper dsl)))))
-  
