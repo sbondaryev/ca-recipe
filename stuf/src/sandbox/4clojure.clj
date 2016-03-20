@@ -488,3 +488,6 @@ apply +
 ;;    (or (= 1 (count edges))
 ;;        (every? even? (map #(count (distinct (val %))) all)))))
 
+;;90 Cartesian Product
+#(set (for [i %1 j %2] (vector i j)))
+
