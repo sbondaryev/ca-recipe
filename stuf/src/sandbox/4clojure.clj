@@ -451,3 +451,40 @@ apply +
 #(clojure.set/union
   (clojure.set/difference %1 %2)
   (clojure.set/difference %2 %1))
+
+;;89 Graph Tour
+(letfn
+    [(next-tulpes [t graph path]
+       (let [node (remove (set (last path)) t)] 
+         (->> (filter #(some (set node) %) graph)
+              (remove #(= % t)))))
+
+     (visited? [path]
+       (->> (frequencies path)
+            (some (fn [[_ freq]] (> freq 2)))))
+       
+
+     (next-graph [t graph]
+       (let [[n m] (split-with (partial not= t) graph)]
+         (concat n (rest m))))
+
+     (walk [tulpes graph path final]
+       (if (or (not (seq graph)) (visited? path))
+         (= (set path) (set final))
+         (some true? (map #(walk
+                            (next-tulpes % graph path)
+                            (next-graph % graph)
+                            (conj path %)
+                            final)
+                          tulpes))))]
+  (defn f [graph]
+    (boolean (walk graph graph [] graph))))
+;;wow solution
+;;(fn [edges]
+;;  (let [
+;;        maps (map #(list (hash-map (first %) (rest %))
+;;                         (hash-map (last %) (butlast %))) edges)
+;;        all (apply merge-with concat (flatten maps))]
+;;    (or (= 1 (count edges))
+;;        (every? even? (map #(count (distinct (val %))) all)))))
+
