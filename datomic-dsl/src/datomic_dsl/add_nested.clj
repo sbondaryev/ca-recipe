@@ -81,3 +81,36 @@
   [schema-name dsl]
   (reduce add-matching-dbids-to-nested-child
           dsl (key-sequence dsl)))
+
+(defn convert-key-sequence-fn
+  "For a given dsl entry with dbids - convert it to Datomic syntax - add append it to the results"
+  [nested-dsl]
+  (fn [key-sequence]
+    (let [local-datom (get-in nested-dsl key-sequence)
+          db-if-ref (:db/id local-datom)
+          local-datom-minus-dbid (dissoc local-datom :db/id)
+          local-datom-minus-children (into {} (map replace-children
+                                                   local-datom-minus-dbid))
+          parent-name (take-last 1 key-sequence)
+          last-two (take-last 2 key-sequence)
+          last-one (first (take-last 1 key-sequence))
+          parent-keyword (case (count last-two)
+                           2 (keyword (first last-two) (second last-two))
+                           1 (keyword (first last-two)))
+          new-keys (into () (map (fn [[k v]] [k (keyword (str last-one "/" k))]) local-datom-minus-children))
+          new-map (clojure.set/rename-keys local-datom-minus-children new-keys)
+          new-map-with-dbid (merge new-map {:db/id db-id-ref})]
+      new-map-with-dbid)))
+
+(defn key-sequences-rev
+  "Given a dsl - return the key-sequences to each node of the nested structure in reverse order"
+  [dsl]
+  (map reverse (key-sequences dsl)))
+
+(defn convert-dsl-to-datomic-syntax
+  "Map over the key-sequences to step through the dsl with dbids and return datomic syntax."
+  [schema-name dsl]
+  (let [dsl-with-dbids (nested-insert-dsl schema-name dsl)]
+    (let [convert-key-sequence (convert-key-sequence-fn dsl-with-dbids)]
+      (map convert-key-sequence (key-sequences-rev dsl)))))
+                        
