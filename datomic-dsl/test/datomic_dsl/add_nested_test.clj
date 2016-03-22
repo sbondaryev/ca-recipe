@@ -6,3 +6,12 @@
             [datomic-dsl.create-nested-test :refer :all]
             [clojure.pprint :refer :all]
             [datomic.api :as d]))
+
+(def nest-datom-dsl
+  "Define data structure."
+  {"borrowevent"
+   {"book" {"title" "Mutiny on the Bounty"
+            "author" "Charles Nordoff"}
+    "borrower" {"name" "John Smith"}
+    "date" "today"}})
+   
