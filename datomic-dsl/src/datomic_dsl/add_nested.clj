@@ -2,7 +2,7 @@
   (:require
    [datomic.api :as d]
    [clojure.zip :as zip]
-   [datomic-dsl.created-nested :refer [map-zip dsl-zipper zip-nodes]]))
+   [datomic-dsl.create-nested :refer [map-zip dsl-zipper zip-nodes]]))
 
 (defn up-stepper
   "Step over the map-entries up."

@@ -2,5 +2,5 @@
   (:require [clojure.test :refer :all]
             [datomic.api :as d]))
 
-(def uri "datomic:mem://datomic-dsl") (d/clojure-database uri)
+(def uri "datomic:mem://datomic-dsl") (d/create-database uri)
 (def conn (d/connect uri))

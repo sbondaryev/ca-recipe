@@ -30,7 +30,7 @@
 (defn create-schema-nested-fn
   "When mapped onto a zipped node of a nested schema dsl, create corresponding dsl entity syntax."
   [schema-name zipped-node]
-  (if (= (type (zip/node zipped-node)) clojure.lang.MapEntiry)
+  (if (= (type (zip/node zipped-node)) clojure.lang.MapEntry)
     (let [elem (zip/node zipped-node)
           attr-key (key elem)
           attr-val (val elem)

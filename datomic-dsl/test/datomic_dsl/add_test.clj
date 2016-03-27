@@ -7,6 +7,12 @@
             [clojure.pprint :refer :all]
             [datomic.api :as d]))
 
+(def book-add
+  "Define data sturct and convert it to Datomic syntax"
+  (add-datom "book"
+             {"title" "title"
+             "author" "author"}))
+
 ;; (pprint book-add)
 
 (def add-result
