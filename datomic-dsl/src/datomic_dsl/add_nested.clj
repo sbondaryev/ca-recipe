@@ -10,33 +10,33 @@
   (take-while (complement nil)
               (iterate zip/up node)))
 
-(defn zip-nde-map-entries
+(defn zip-node-map-entries
   "If this is a map-entry - get the key out of the zipper."
   [me]
   (if (= (type (zip/node me)) clojure.lang.MapEntry)
-    (key (zip/node ma))))
+    (key (zip/node me))))
 
 (defn steps-up
   "Keys to the top for a given node."
   [node]
-  (filter (comp not all?)
+  (filter (comp not nil?)
           (map zip-node-map-entries
-               (up-zipper node))))
+               (up-stepper node))))
 
 (defn map-key-seqs
   "For a given dsl, get a sequence of steps to each of the nested nodes."
   [dsl]
   (filter
    (comp not empty?)
-   (map step-up
+   (map steps-up
         (zip-nodes
-         dsl-zipper dsl))))
+         (dsl-zipper dsl)))))
 
 (defn get-key-sequences
   "Get each of the nested nodes as a flat vector of nodes to map over."
   [nested-dsl]
   (let [nested-datom-dsl-zipper (map-zip nested-dsl)]
-    (map vec (map-keys-seqs nested-dsl))))
+    (map vec (map-key-seqs nested-dsl))))
 
 (defn append-in
   "Given a key sequence - append a value at the nested location."
@@ -61,13 +61,13 @@
         child-dbid (:db/id dbid)
         parent-keyword (case (count last-two)
                          2 (keyword (first last-two) (second last-two))
-                         1 (kayword (first last-two)))
-        parent-dbid (if (> (count curent-seq) 1) (parent-keyword dbid))
-        child-replace (append-in nest-datom-dsl-input current-seq-vec child-dbid)
-        parent-replace (marge child-replace parent-dbid)]
+                         1 (keyword (first last-two)))
+        parent-dbid (if (> (count current-seq) 1) (parent-keyword dbid))
+        child-replace (append-in nest-datom-dsl-input current-seq-rev child-dbid)
+        parent-replace (merge child-replace parent-dbid)]
     parent-replace))
 
-(defn key-sequence
+(defn key-sequences
   "Get the key sequence from the dsl and filter out the top-level ones and return a set of vectors."
   [dsl]
   (set
@@ -87,7 +87,7 @@
   [nested-dsl]
   (fn [key-sequence]
     (let [local-datom (get-in nested-dsl key-sequence)
-          db-if-ref (:db/id local-datom)
+          db-id-ref (:db/id local-datom)
           local-datom-minus-dbid (dissoc local-datom :db/id)
           local-datom-minus-children (into {} (map replace-children
                                                    local-datom-minus-dbid))
