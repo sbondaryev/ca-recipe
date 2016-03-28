@@ -491,3 +491,30 @@ apply +
 ;;90 Cartesian Product
 #(set (for [i %1 j %2] (vector i j)))
 
+;;91 Graph Connectivity
+(defn f[edges]
+  (let [
+        maps (map #(list (hash-map (first %) (rest %))
+                         (hash-map (last %) (butlast %))) edges)
+        all (apply merge-with concat (flatten maps))
+        connected? (fn cn? [s e path all]
+                     (cond
+                       (some #{s} path) false
+                       (= s e) true
+                       :else (some true?
+                                   (map #(cn? % e (conj path s) all)
+                                        (all s)))))]
+    (->>
+     (for [s (keys all) e (keys all) :when (not= s e)]
+       (connected? s e [] all))
+     (#(conj % true))
+     (every? true?))))
+
+;; wow solution
+;;(fn connected? [edges]
+;;  (= (set (apply concat edges))
+;;     (loop [vs #{(ffirst edges)}]
+;;       (if-let [nvs (seq (for [[a b] edges :when (and (vs a) (not (vs b)))] b))]
+;;         (recur (into vs nvs))
+;;         vs))))
+
