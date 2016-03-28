@@ -24,11 +24,10 @@
 
 ;;(pprint nested-book-schema)
 
-(def book-schema-query-print
+(def book-schema-query-result
   "Query the schema to see if it exists -  schemas are entities too!"
   (d/touch (d/entity (d/db conn) :borrower/name)))
 
 (deftest schema-created-test
   (testing "Is the schema created with a borrower name?"
     (is book-schema-query-result)))
-  

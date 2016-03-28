@@ -7,7 +7,7 @@
 (defn up-stepper
   "Step over the map-entries up."
   [node]
-  (take-while (complement nil)
+  (take-while (complement nil?)
               (iterate zip/up node)))
 
 (defn zip-node-map-entries
@@ -35,7 +35,7 @@
 (defn get-key-sequences
   "Get each of the nested nodes as a flat vector of nodes to map over."
   [nested-dsl]
-  (let [nested-datom-dsl-zipper (map-zip nested-dsl)]
+  (let [nest-datom-dsl-zipper (map-zip nested-dsl)]
     (map vec (map-key-seqs nested-dsl))))
 
 (defn append-in
@@ -58,11 +58,11 @@
         parent-seq (drop-last current-seq)
         last-two (take-last 2 current-seq-rev)
         dbid (d/tempid :db.part/user)
-        child-dbid (:db/id dbid)
+        child-dbid {:db/id dbid}
         parent-keyword (case (count last-two)
                          2 (keyword (first last-two) (second last-two))
                          1 (keyword (first last-two)))
-        parent-dbid (if (> (count current-seq) 1) (parent-keyword dbid))
+        parent-dbid (if (> (count current-seq) 1) {parent-keyword dbid})
         child-replace (append-in nest-datom-dsl-input current-seq-rev child-dbid)
         parent-replace (merge child-replace parent-dbid)]
     parent-replace))
@@ -80,7 +80,7 @@
   "Step through the existing dsl and add matching dbids to future parent and children entities."
   [schema-name dsl]
   (reduce add-matching-dbids-to-nested-child
-          dsl (key-sequence dsl)))
+          dsl (key-sequences dsl)))
 
 (defn convert-key-sequence-fn
   "For a given dsl entry with dbids - convert it to Datomic syntax - add append it to the results"
@@ -97,7 +97,7 @@
           parent-keyword (case (count last-two)
                            2 (keyword (first last-two) (second last-two))
                            1 (keyword (first last-two)))
-          new-keys (into () (map (fn [[k v]] [k (keyword (str last-one "/" k))]) local-datom-minus-children))
+          new-keys (into {} (map (fn [[k v]] [k (keyword (str last-one "/" k))]) local-datom-minus-children))
           new-map (clojure.set/rename-keys local-datom-minus-children new-keys)
           new-map-with-dbid (merge new-map {:db/id db-id-ref})]
       new-map-with-dbid)))

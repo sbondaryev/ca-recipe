@@ -25,7 +25,7 @@
   "Keep a reference to the transaction result"
   (d/transact conn nested-datomic-add-syntax))
 
-(def borrowed-datom
+(def borrower-datom
   "Query against the result"
   (d/touch
    (d/entity

@@ -44,7 +44,7 @@
        :db/valueType first-val-val
        :db/cardinality :db.cardinality/one
        :db/doc doco
-       :db/install/_attribute :db.part/db})))
+       :db.install/_attribute :db.part/db})))
 
 (defn create-schema-nested
   "Given a schema map name and a dsl input, return Datomic syntax for creating
