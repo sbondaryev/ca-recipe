@@ -518,3 +518,12 @@ apply +
 ;;         (recur (into vs nvs))
 ;;         vs))))
 
+;;92 Read Roman numerals
+(defn f [r]
+  (let [r->a {\I 1 \V 5 \X 10 \L 50 \C 100 \D 500 \M 1000}]
+    (->>
+     (map r->a r)
+     (partition-all 2 1)
+     (map (fn[[a b]] (if (and b (< a b)) (- a) a)))
+     (apply +))))
+       
