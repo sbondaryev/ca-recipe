@@ -527,3 +527,14 @@ apply +
      (map (fn[[a b]] (if (and b (< a b)) (- a) a)))
      (apply +))))
        
+;;93 Partially Flatten a Sequence
+(defn f
+  ([col] (f col []))
+  ([[fst & rst] res]
+   (-> res
+       (#(if (some sequential? fst) (f fst %) (conj % fst)))
+       (#(if (seq rst) (f rst %) %)))))
+;; wow solution
+;;(fn f [xs]
+;; (if (every? sequential? xs) (mapcat f xs) [xs]))
+
