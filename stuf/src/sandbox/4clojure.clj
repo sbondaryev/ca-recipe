@@ -538,3 +538,25 @@ apply +
 ;;(fn f [xs]
 ;; (if (every? sequential? xs) (mapcat f xs) [xs]))
 
+;;94 Game of Life
+(letfn
+    [(neighbors [size yx]
+       (filter (fn [new-yx]
+                 (every? #(< -1 % size) new-yx))
+               (map #(vec (map + yx %))
+                    [[-1 -1] [-1 0] [-1 1] [0 -1] [0 1] [1 -1] [1 0] [1 1]])))
+     (next-generation [board yx]
+       (let [cel (get-in board yx)]
+         (-> (map #(get-in board %) (neighbors (count board) yx))
+             (frequencies)
+             (get \# 0)
+             (#(cond (and (= cel \#) (< 1 % 4)) \#
+                     (and (= cel \space) (= % 3)) \#
+                     :defauld \space)))))]
+
+  (defn g [board]
+    (->>
+     (for [y (range (count board)) x (range (count (get board y)))] [y x])
+     (map #(next-generation board %))
+     (partition (count board))
+     (map #(apply str %)))))
