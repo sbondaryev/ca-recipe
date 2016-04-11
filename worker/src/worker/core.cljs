@@ -4,7 +4,10 @@
 (enable-console-print!)
 
 
-(def b (new js/Blob (clj->js ["self.addEventListener('message', function(e) { postMessage(e.data); } ,false);"])))
+(def b (new js/Blob (clj->js ["self.addEventListener('message', function(e) {
+console.log('in worker');
+postMessage(e.data);
+} ,false);"])))
 
 (def w (new js/Worker (.createObjectURL js/URL b)))
 
