@@ -1,5 +1,5 @@
 (ns worker.core
-  (:require ))
+  (:require [cljs.js :as cljs]))
 
 (enable-console-print!)
 
@@ -13,7 +13,9 @@ postMessage(e.data);
 
 (.addEventListener w "message" (fn [e] (println (.-data e))))
 
-(println w)
+(println (cljs/compile-str (cljs/empty-state) "(defn j[x y] (+ x y))" #(:value %)))
+
+
 (.postMessage w "test")
 
 
