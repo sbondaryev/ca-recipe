@@ -3,24 +3,40 @@
 
 (enable-console-print!)
 
+(def b (new js/Blob (clj->js ["
+var CLOSURE_BASE_PATH = 'http://localhost:3449/js/compiled/out/goog/';
+var CLOSURE_IMPORT_SCRIPT = (function(global) {
+  return function(src) {
+    //global['console'].log(src);
+    global['importScripts'](src);
+    return true;
+  };
+})(self);
 
-(def b (new js/Blob (clj->js ["self.addEventListener('message', function(e) {
-console.log('in worker');
-postMessage(e.data);
-} ,false);"])))
+self.onmessage = function(e) {
+  importScripts(
+    'http://localhost:3449/js/compiled/out/goog/base.js'
+    ,'http://localhost:3449/js/compiled/out/cljs_deps.js'
+  )
+  goog.require('cljs.core')
+
+  cljs.core.enable_console_print_BANG_.call(null);
+  cljs.core.println.call(null,e.data);
+  postMessage(e.data);
+};
+"])))
 
 (def w (new js/Worker (.createObjectURL js/URL b)))
 
-(.addEventListener w "message" (fn [e] (println (.-data e))))
+(defn worker-print [message]
+  (println message))
 
-(println (cljs/compile-str (cljs/empty-state) "(defn j[x y] (+ x y))" #(:value %)))
+(println (cljs/compile-str (cljs/empty-state) "(println \"test\")" #(:value %)))
 
-
-(.postMessage w "test")
+(.postMessage w "hello google closure worker")
 
 
 ;;(defonce app-state (atom {:text "Hello world!"}))
-
 
 (defn on-js-reload []
   ;; optionally touch your app-state to force rerendering depending on
