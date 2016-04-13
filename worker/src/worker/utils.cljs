@@ -6,12 +6,14 @@
 (def cljs-deps-file (str closure-base-path "../cljs_deps.js"))
 
 (defn cljs->js [code]
-  (cljs/compile-str
-    (cljs/empty-state)
-    (pr-str code)
-    "worker"
-    {:ns 'worker.worker}
-    #(:value %)))
+  (let [st (cljs/empty-state)]
+    (cljs.js/eval-str st "(ns worker.worker)" nil {:eval cljs.js/js-eval :context :expr} identity)
+    (cljs/compile-str
+      st
+      (pr-str code)
+      nil
+      {:ns 'worker.worker}
+      #(:value %))))
 
 (defn worker-body [body]
   (str

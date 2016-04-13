@@ -10,7 +10,7 @@
 (defn do-some []
   (let [a (f/code->str
     (enable-console-print!)
-    (worker.worker/sleep 500)
+    (sleep 500)
     (println "hello google closure worker"))]
 
     (println a)
