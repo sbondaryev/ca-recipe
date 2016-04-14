@@ -28,8 +28,7 @@
    "})(self);"
    "importScripts('" closure-base-file "','" cljs-deps-file "');"
    "goog.require('cljs.core');"
-   ;;@TODO: replace dinamicaly with current ns
-   "goog.require('worker.worker');"
+   "goog.require('" ns* "');"
 
    "self.onmessage = function(e) {"
      body

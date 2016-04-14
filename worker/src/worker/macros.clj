@@ -1,5 +1,6 @@
 (ns worker.macros)
 
-(defmacro code->str [& body]
-  `(worker.utils/worker-body
-    (worker.utils/cljs->js '(do ~@body))))
+(defmacro code->str [ns* & body]
+  `(let [ns# ~ns*]
+    (worker.utils/worker-body ns#
+    (worker.utils/cljs->js ns# '(do ~@body) ))))
