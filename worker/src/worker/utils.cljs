@@ -5,17 +5,18 @@
 (def closure-base-file (str closure-base-path "/base.js"))
 (def cljs-deps-file (str closure-base-path "../cljs_deps.js"))
 
-(defn cljs->js [code]
+(defn cljs->js [ns* code]
   (let [st (cljs/empty-state)]
-    (cljs.js/eval-str st "(ns worker.worker)" nil {:eval cljs.js/js-eval :context :expr} identity)
+  (binding [cljs.analyzer/*cljs-warning-handlers* []] ;; disable compiler warnings
+    (cljs.js/eval-str st (str "(ns " ns* ")") nil {:eval cljs.js/js-eval :context :expr} identity)
     (cljs/compile-str
       st
       (pr-str code)
       nil
-      {:ns 'worker.worker}
-      #(:value %))))
+      {:ns (symbol ns*)}
+      #(:value %)))))
 
-(defn worker-body [body]
+(defn worker-body [ns* body]
   (str
    "var CLOSURE_BASE_PATH = '" closure-base-path "';"
    "var CLOSURE_IMPORT_SCRIPT = (function(global) {"
