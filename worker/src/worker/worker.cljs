@@ -23,11 +23,10 @@
    "};"
    "})(self);"
    "importScripts('" closure-base-file "','" cljs-deps-file "');"
-   "goog.require('cljs.core');"
    "goog.require('worker.worker');"
 
    "self.onmessage = function(e) {"
-     fn-name ".apply();"
+     "worker.worker.wrk();"
    "};"))
 
 (defn worker-body-min [fn-name]
@@ -55,8 +54,8 @@
 
 
 (defn do-some []
-  (let [a (worker-body-min (func-name wrk))]
-
+(println goog.basePath)
+  (let [a (worker-body (func-name wrk))]
     (println a)
 
     (def b (js/Blob. (clj->js [a])))
