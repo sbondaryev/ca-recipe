@@ -36,7 +36,7 @@
                {:id "min"
                 :source-paths ["src"]
                 :figwheel { :autoload false }
-                :compiler {:output-to "resources/public/js/compiled/worker-min.js"
+                :compiler {:output-to "resources/public/js/compiled/worker.js"
                            :main worker.core
                            :optimizations :advanced
                            :pretty-print false}}]}
