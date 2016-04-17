@@ -20,6 +20,13 @@
     (first (scripts-src))))
 
 (def *cljs-output-file* (cljs-output-file))
+
+(defn serialize [obj]
+  (->> obj
+    (map (fn [[key val]] (str (name key) ":" val)))
+    (interpose ",")
+    (#(str "{" (apply str %) "}"))))
+
 (defn worker-body [[ns* fn*]]
   (let [
     multi-loader (str
