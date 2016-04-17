@@ -1,7 +1,25 @@
+(ns worker.worker (:require [goog.dom :as dom]))
+
+(declare cljs-output-file)
+
+(def *closure-base-path* goog/basePath)
+(def *closure-base-file* (str *closure-base-path* "base.js"))
 (def *document* {
   :getElementsByTagName "function() {return [];}"
 })
 
+(defn scripts-src []
+  (let [scripts (.getElementsByTagName (dom/getDocument) "SCRIPT")]
+    (->> (for [i (range (.-length scripts))] (aget scripts i))
+         (remove #(empty? (.-src %)))
+         (map #(.-src %)))))
+
+(defn cljs-output-file []
+  (if-not (empty? *closure-base-path*)
+    (str *closure-base-path* "../cljs_deps.js")
+    (first (scripts-src))))
+
+(def *cljs-output-file* (cljs-output-file))
 (defn worker-body [[ns* fn*]]
   (let [
     multi-loader (str
