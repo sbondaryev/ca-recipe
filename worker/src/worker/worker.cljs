@@ -1,4 +1,9 @@
+(def *document* {
+  :getElementsByTagName "function() {return [];}"
+})
+
   (str
+    "var document=" (serialize *document*) ";"
    "var CLOSURE_BASE_PATH = '" closure-base-path "';"
    "var CLOSURE_IMPORT_SCRIPT = (function(global) {"
    "return function(src) {"
