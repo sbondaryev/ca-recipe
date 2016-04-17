@@ -64,3 +64,8 @@
 
     (.postMessage w nil)
     ))
+(defn do-some [wrk]
+  (let [a (worker-body (full-func-name wrk))
+        b (js/Blob. (clj->js [a]))
+        w (js/Worker. (.createObjectURL js/URL b))]
+    (.postMessage w nil)))
