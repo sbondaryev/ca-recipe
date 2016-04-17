@@ -1,18 +1,3 @@
-(ns worker.worker (:require [cljs.js :as cljs]))
-
-
-(def tm 1000)
-(defn sleep [msec]
-  (let [deadline (+ msec (.getTime (js/Date.)))]
-    (while (> deadline (.getTime (js/Date.)))
-      (* 1 1) ;;advanced mode
-    )))
-
-(def closure-base-path goog.basePath)
-(def closure-base-file (str closure-base-path "/base.js"))
-(def cljs-deps-file (str closure-base-path "../cljs_deps.js"))
-
-(defn worker-body [fn-name]
   (str
    "var CLOSURE_BASE_PATH = '" closure-base-path "';"
    "var CLOSURE_IMPORT_SCRIPT = (function(global) {"
