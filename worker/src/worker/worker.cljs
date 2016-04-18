@@ -48,6 +48,7 @@
     (if (empty? *closure-base-path*) single-loader multi-loader)
     "self.onmessage = function(e) {"
       ns* "." fn* ".apply();"
+      "self.postMessage(\"document.getElementsByTagName('SCRIPT')\");"
     "};")))
 
 (defn full-func-name [wrk]
@@ -57,4 +58,7 @@
   (let [a (worker-body (full-func-name wrk))
         b (js/Blob. (clj->js [a]))
         w (js/Worker. (.createObjectURL js/URL b))]
+        (println "add event")
+    (set! (.-onmessage w) (fn [e] (
+      (.postMessage w (js/eval e.data) (array (js/ArrayBuffer. 100))))))
     (.postMessage w nil)))
