@@ -13,7 +13,9 @@
   (enable-console-print!)
   (println tm)
   (sleep tm)
-  (println "test"))
+  (println "test")
+  {:time tm
+    :prnt 100})
 
 (defn ^:export main []
   (enable-console-print!)

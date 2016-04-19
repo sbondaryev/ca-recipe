@@ -27,6 +27,8 @@
     (interpose ",")
     (#(str "{" (apply str %) "}"))))
 
+(defn ^:export pr-str-js [code] (pr-str code))
+
 (defn worker-body [[ns* fn*]]
   (let [
     multi-loader (str
@@ -39,7 +41,8 @@
      "};"
      "})(self);"
      "importScripts('" *closure-base-file* "','" *cljs-output-file* "');"
-     "goog.require('" ns* "');")
+     "goog.require('" ns* "');"
+     "goog.require('worker.worker');")
     single-loader (str
       "importScripts('" *cljs-output-file* "');"
     )]
@@ -47,8 +50,8 @@
     "var document=" (serialize *document*) ";"
     (if (empty? *closure-base-path*) single-loader multi-loader)
     "self.onmessage = function(e) {"
-      ns* "." fn* ".apply();"
-      "self.postMessage(\"document.getElementsByTagName('SCRIPT')\");"
+      "var res = " ns* "." fn* ".apply();"
+      "self.postMessage(worker.worker.pr_str_js(res));"
     "};")))
 
 (defn full-func-name [wrk]
@@ -59,6 +62,6 @@
         b (js/Blob. (clj->js [a]))
         w (js/Worker. (.createObjectURL js/URL b))]
         (println "add event")
-    (set! (.-onmessage w) (fn [e] (
-      (.postMessage w (js/eval e.data) (array (js/ArrayBuffer. 100))))))
+    (println a)
+    (set! (.-onmessage w) (fn [e] (println (:prnt (cljs.reader/read-string (.-data e))))))
     (.postMessage w nil)))
