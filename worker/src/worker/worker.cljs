@@ -69,3 +69,7 @@
 (def worker-body (create-worker-body))
 (def worker-blob (js/Blob. (clj->js [worker-body])))
 
+(defn do-some [wmeta]
+  (let [w (js/Worker. (.createObjectURL js/URL worker-blob))]
+    (set! (.-onmessage w) (fn [e] (println (:prnt (*deserialize* (.-data e))))))
+    (.postMessage w (cljs.core/clj->js [(:ns wmeta) (:name wmeta)]))))
