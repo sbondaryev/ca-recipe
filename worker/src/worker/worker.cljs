@@ -1,11 +1,14 @@
-(ns worker.worker (:require [goog.dom :as dom]))
+(ns worker.worker
+  (:require [goog.dom :as dom] [cljs.reader]))
 
 (declare cljs-output-file)
 
 (def *closure-base-path* goog/basePath)
 (def *closure-base-file* (str *closure-base-path* "base.js"))
-(def *document* {
-  :getElementsByTagName "function() {return [];}"
+(def *serialize* pr-str)
+(def *deserialize* cljs.reader/read-string)
+(def *env-objs* {
+  :document {:getElementsByTagName "function() {return [];}"}
 })
 
 (defn scripts-src []
