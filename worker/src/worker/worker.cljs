@@ -50,27 +50,22 @@
      "};"
      "})(self);"
      "importScripts('" *closure-base-file* "','" *cljs-output-file* "');"
-     "goog.require('" ns* "');"
      "goog.require('worker.worker');")
     single-loader (str
       "importScripts('" *cljs-output-file* "');"
     )]
   (str
-    "var document=" (serialize *document*) ";"
+    *env-str*
     (if (empty? *closure-base-path*) single-loader multi-loader)
     "self.onmessage = function(e) {"
-      "var res = " ns* "." fn* ".apply();"
+      "var ns = e.data[0];"
+      "var fn = e.data[1];"
+      (if-not (empty? *closure-base-path*) "goog.require(ns);")
+      "console.log(eval(ns));"
+      "var res = eval(ns+'.'+fn)();"
       "self.postMessage(worker.worker.pr_str_js(res));"
     "};")))
 
-(defn full-func-name [wrk]
-  (js->clj (.split (str wrk) "/")))
+(def worker-body (create-worker-body))
+(def worker-blob (js/Blob. (clj->js [worker-body])))
 
-(defn do-some [wrk]
-  (let [a (worker-body (full-func-name wrk))
-        b (js/Blob. (clj->js [a]))
-        w (js/Worker. (.createObjectURL js/URL b))]
-        (println "add event")
-    (println a)
-    (set! (.-onmessage w) (fn [e] (println (:prnt (cljs.reader/read-string (.-data e))))))
-    (.postMessage w nil)))
