@@ -22,17 +22,23 @@
     (str *closure-base-path* "../cljs_deps.js")
     (first (scripts-src))))
 
-(def *cljs-output-file* (cljs-output-file))
-
-(defn serialize [obj]
+(defn generate-obj-body [obj]
   (->> obj
     (map (fn [[key val]] (str (name key) ":" val)))
     (interpose ",")
     (#(str "{" (apply str %) "}"))))
 
-(defn ^:export pr-str-js [code] (pr-str code))
+(defn genetate-env [objs]
+  (reduce
+    (fn [res [obj body]] (str res "var " (name obj) "=" (generate-obj-body body) ";"))
+    "" objs))
 
-(defn worker-body [[ns* fn*]]
+(def *cljs-output-file* (cljs-output-file))
+(def *env-str* (genetate-env *env-objs*))
+
+(defn ^:export pr-str-js [code] (*serialize* code))
+
+(defn create-worker-body []
   (let [
     multi-loader (str
      "var CLOSURE_BASE_PATH = '" *closure-base-path* "';"
