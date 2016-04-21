@@ -61,7 +61,6 @@
       "var ns = e.data[0];"
       "var fn = e.data[1];"
       (if-not (empty? *closure-base-path*) "goog.require(ns);")
-      "console.log(eval(ns));"
       "var res = eval(ns+'.'+fn)();"
       "self.postMessage(worker.worker.pr_str_js(res));"
     "};")))
@@ -72,4 +71,7 @@
 (defn do-some [wmeta]
   (let [w (js/Worker. (.createObjectURL js/URL worker-blob))]
     (set! (.-onmessage w) (fn [e] (println (:prnt (*deserialize* (.-data e))))))
-    (.postMessage w (cljs.core/clj->js [(:ns wmeta) (:name wmeta)]))))
+    (.postMessage w (cljs.core/clj->js [(:ns wmeta) (:name wmeta)]))
+    (.postMessage w (cljs.core/clj->js [(:ns wmeta) (:name wmeta)]))
+    (.postMessage w (cljs.core/clj->js [(:ns wmeta) (:name wmeta)]))
+    ))

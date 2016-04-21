@@ -1,5 +1,4 @@
-(ns worker.macros
-  (:require [worker.impl.macros :as wm]))
+(ns worker.macros)
 
 (defmacro do-some [& body]
   `(let [~'w (js/Worker. (.createObjectURL js/URL worker.worker/worker-blob))]

@@ -12,11 +12,10 @@
 
 (defn ^:export wrk []
   (enable-console-print!)
-  (println tm)
+  (println "process..")
   (sleep tm)
-  (println "test")
-  {:time tm
-    :prnt 100})
+  (println "done!")
+  {:prnt tm})
 
 (defn ^:export wrk2 []
   (enable-console-print!)
