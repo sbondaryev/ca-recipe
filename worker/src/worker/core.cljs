@@ -3,7 +3,7 @@
             [worker.worker :as w])
   (:require-macros [worker.macros :as wm]))
 
-(def tm 1000)
+(def tm 2000)
 (defn sleep [msec]
   (let [deadline (+ msec (.getTime (js/Date.)))]
     (while (> deadline (.getTime (js/Date.)))
@@ -35,16 +35,23 @@
 
 (defn ^:export main []
   (enable-console-print!)
-  (def some-worker (do-some))
+  (def strt (.getTime (js/Date.)))
 
-  (println some-worker)
-  (js/setTimeout #(do (sleep 2000) (println some-worker)), 3000)
+  (def w1 (do-some))
+  (def w2 (do-some))
+  (def w3 (do-some))
+  (def w4 (do-some))
+  (add-watch (:result w1) nil #(println (- (.getTime (js/Date.)) strt)))
+  (add-watch (:result w2) nil #(println (- (.getTime (js/Date.)) strt)))
+  (add-watch (:result w3) nil #(println (- (.getTime (js/Date.)) strt)))
+  (add-watch (:result w4) nil #(println (- (.getTime (js/Date.)) strt)))
+  (wrk)
+  (println (- (.getTime (js/Date.)) strt))
+  (wrk)
+  (println (- (.getTime (js/Date.)) strt))
+  (wrk)
+  (println (- (.getTime (js/Date.)) strt))
+  (wrk)
+  (println (- (.getTime (js/Date.)) strt))
 
-  ;;(println some-worker)
-
-;;  (println (w/js-func-name wrk))
-;;  (wm/do-some 1)
-;;    (w/do-some (meta (var wrk)))
-;;  (println "work2..")
-;;  (w/do-some `wrk2)
   )
