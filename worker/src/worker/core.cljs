@@ -10,10 +10,19 @@
       (* 1 1) ;;advanced mode
     )))
 
+(defn do-some []
+  (let [w (js/Worker. (.createObjectURL js/URL worker.worker/worker-blob))]
+    (set! (.-onmessage w) #(println "test"))
+    (.postMessage w nil)))
+
 (defn ^:export wrk []
   (enable-console-print!)
   (println "process..")
-  (sleep tm)
+  (js/Worker. (.createObjectURL js/URL worker.worker/worker-blob))
+  (js/Worker. (.createObjectURL js/URL worker.worker/worker-blob))
+  (js/Worker. (.createObjectURL js/URL worker.worker/worker-blob))
+;;  (.then (do-some) #(println "subworker"))
+  (sleep 10000)
   (println "done!")
   {:prnt tm})
 
@@ -25,13 +34,7 @@
   {:time tm
     :prnt 100})
 
-(defn do-some []
-  (let [w (js/Worker. (.createObjectURL js/URL worker.worker/worker-blob))
-        wmeta (meta (var wrk))
-        result (atom)]
-    (set! (.-onmessage w) #(reset! result (worker.worker/*deserialize* (.-data %))))
-    (.postMessage w (cljs.core/clj->js [(:ns wmeta) (:name wmeta)]))
-    {:w w :result result}))
+
 
 (defn do-some-pr []
   (js/Promise. (fn [res rej]
@@ -44,9 +47,8 @@
   (enable-console-print!)
   (def strt (.getTime (js/Date.)))
 
-  (.then (do-some-pr) #(println (- (.getTime (js/Date.)) strt)))
-  (.then (do-some-pr) #(println (- (.getTime (js/Date.)) strt)))
-  (.then (do-some-pr) #(println (- (.getTime (js/Date.)) strt)))
+  (.then (do-some-pr) #(println %))
+
   ; (def w1 (do-some))
   ; (def w2 (do-some))
   ; (def w3 (do-some))

@@ -6,7 +6,7 @@
 (def *closure-base-path* goog/basePath)
 (def *closure-base-file* (str *closure-base-path* "base.js"))
 (def *serialize* pr-str)
-(def *deserialize* cljs.reader/read-string)
+(def *deserialize* identity)
 (def *env-objs* {
   :document {:getElementsByTagName "function() {return [];}"}
 })
@@ -38,6 +38,67 @@
 
 (defn ^:export pr-str-js [code] (*serialize* code))
 
+(def subworker "
+self.Worker = function(path){
+  var that = this;
+  this.id = Math.random().toString(36).substr(2, 5);
+
+  this.eventListeners = {
+    'message': []
+  };
+  self.addEventListener('message', function(e){
+    if (e.data._from === that.id){
+      var newEvent = new MessageEvent('message');
+      newEvent.initMessageEvent('message', false, false, e.data.message, that, '', null, []);
+      that.dispatchEvent(newEvent);
+      if (that.onmessage){
+        that.onmessage(newEvent);
+      }
+    }
+  });
+  self.postMessage({
+    _subworker: true,
+    cmd: 'newWorker',
+    id: this.id,
+  });
+};
+Worker.prototype = {
+  onerror: null,
+  onmessage: null,
+  postMessage: function(message){
+    self.postMessage({
+      _subworker: true,
+      id: this.id,
+      cmd: 'passMessage',
+      message: message
+    });
+  },
+  terminate: function(){
+    self.postMessage({
+      _subworker: true,
+      cmd: 'terminate',
+      id: this.id
+    });
+  },
+  addEventListener: function(type, listener, useCapture){
+    if (this.eventListeners[type]){
+      this.eventListeners[type].push(listener);
+    }
+  },
+  removeEventListener: function(type, listener, useCapture){
+    var index = this.eventListeners[type].indexOf(listener);
+    if (index !== -1){
+      this.eventListeners[type].splice(idx, 1);
+    }
+  },
+  dispatchEvent: function(event){
+    var listeners = this.eventListeners[event.type];
+    for (var i = 0; i < listeners.length; i++) {
+      listeners[i](event);
+    }
+  }
+};")
+
 (defn create-worker-body []
   (let [
     multi-loader (str
@@ -55,6 +116,7 @@
       "importScripts('" *cljs-output-file* "');"
     )]
   (str
+    subworker
     *env-str*
     (if (empty? *closure-base-path*) single-loader multi-loader)
     "self.onmessage = function(e) {"
