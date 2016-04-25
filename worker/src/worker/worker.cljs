@@ -116,7 +116,7 @@ Worker.prototype = {
       "importScripts('" *cljs-output-file* "');"
     )]
   (str
-    subworker
+    ;;subworker
     *env-str*
     (if (empty? *closure-base-path*) single-loader multi-loader)
     "self.addEventListener('message', function(e) {"
@@ -124,30 +124,39 @@ Worker.prototype = {
       "var fn = e.data[1];"
       (if-not (empty? *closure-base-path*) "goog.require(ns);")
       "var res = eval(ns+'.'+fn)();"
-      ;;"self.postMessage(worker.worker.pr_str_js(res));"
+      "self.postMessage(worker.worker.pr_str_js(res));"
     "});")))
 
 (def worker-body (create-worker-body))
 (def worker-blob (js/Blob. (clj->js [worker-body])))
 
-(def allWorkers (atom {}))
+(def worker-pool (atom {}))
+(def worker-pool-arr (atom []))
+
 (declare Worker)
 (defn message-recieved [em]
-  (js/console.log em)
   (if (.. em -data -_subworker)
     (case (.. em -data -cmd)
       "newWorker" (let [w (Worker)]
-          (println "create worker...")
           (.addEventListener w "message"
           #(.postMessage (.. em -target) (js-obj
             "_from" (.. em -data -id)
             "message" (.. % -data))))
-          (swap! allWorkers assoc (.. em -data -id) w))
+          (swap! worker-pool assoc (.. em -data -id) w))
       "terminate" (println "terminate")
       "passMessage" (do
-        (.postMessage (@allWorkers (.. em -data -id)) (.. em -data -message))))))
+        (.postMessage (@worker-pool (.. em -data -id)) (.. em -data -message))))))
 
 (defn Worker []
   (let [w (js/Worker. (.createObjectURL js/URL worker.worker/worker-blob))]
     (.addEventListener w "message" message-recieved)
     w))
+
+(defn add-worker []
+  (swap! worker-pool-arr conj (js/Worker. (.createObjectURL js/URL worker.worker/worker-blob))))
+(defn get-worker []
+  (if-let [w (some #(if-not (.. % -onmessage) %) @worker-pool-arr)]
+    (do
+      (set! (.-onmessage w) (fn []))
+      w)
+    (js/setTimeout clojure.core/recur 100)))

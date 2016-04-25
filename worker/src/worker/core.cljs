@@ -1,6 +1,7 @@
 (ns worker.core
   (:require [cljs.js]
-            [worker.worker :as w])
+            [worker.worker :as w]
+            [worker.dispatch :as dispatch])
   (:require-macros [worker.macros :as wm]))
 
 (def tm 2000)
@@ -36,10 +37,30 @@
       (.postMessage w (cljs.core/clj->js [(:ns wmeta) (:name wmeta)]))
       ))))
 
+(defn async []
+  (while true
+    (println 1)))
+
 (defn ^:export main []
   (enable-console-print!)
-  (def strt (.getTime (js/Date.)))
 
-  (do-some-wrk)
+  (dispatch/run async)
+
+  ; (async)
+
+  ; (enable-console-print!)
+  ; (w/add-worker)
+  ; (w/add-worker)
+  ; (println (map #(.. % -onmessage) @w/worker-pool-arr))
+  ; (println (w/get-worker))
+  ; (println (map #(.. % -onmessage) @w/worker-pool-arr))
+  ; (println (w/get-worker))
+  ; (println (map #(.. % -onmessage) @w/worker-pool-arr))
+  ; (println (w/get-worker))
+  ; (println "done")
+  ; (println (js/setTimeout #() 100))
+  ; (def strt (.getTime (js/Date.)))
+  ;
+  ; (do-some-wrk)
 
   )
