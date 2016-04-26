@@ -37,14 +37,14 @@
       (.postMessage w (cljs.core/clj->js [(:ns wmeta) (:name wmeta)]))
       ))))
 
-(defn async []
-  (while true
-    (println 1)))
 
 (defn ^:export main []
   (enable-console-print!)
-
-  (dispatch/run async)
+(w/add-worker)
+(w/add-worker)
+  (dispatch/run #(println %))
+  (dispatch/run #(println %))
+  (dispatch/run #(println %))
 
   ; (async)
 

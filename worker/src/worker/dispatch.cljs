@@ -1,5 +1,6 @@
 (ns worker.dispatch
   (:require [worker.buffer :as buffer]
+            [worker.worker :as worker]
             [goog.async.nextTick]))
 
 (def tasks (buffer/ring-buffer 32))
@@ -14,11 +15,14 @@
   (set! running? true)
   (set! queued? false)
   (loop [count 0]
-    (let [m (.pop tasks)]
-      (when-not (nil? m)
-        (m)
-        (when (< count TASK_BATCH_SIZE)
-          (recur (inc count))))))
+    (println "but i try")
+    (if-let [w (worker/get-worker)]
+      (let [m (.pop tasks)]
+        (when-not (nil? m)
+          (worker/lock-worker w)
+          (m w)
+          (when (< count TASK_BATCH_SIZE)
+            (recur (inc count)))))))
   (set! running? false)
   (when (> (.-length tasks) 0)
     (queue-dispatcher)))

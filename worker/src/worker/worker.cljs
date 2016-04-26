@@ -155,8 +155,6 @@ Worker.prototype = {
 (defn add-worker []
   (swap! worker-pool-arr conj (js/Worker. (.createObjectURL js/URL worker.worker/worker-blob))))
 (defn get-worker []
-  (if-let [w (some #(if-not (.. % -onmessage) %) @worker-pool-arr)]
-    (do
-      (set! (.-onmessage w) (fn []))
-      w)
-    (js/setTimeout clojure.core/recur 100)))
+  (some #(if-not (.. % -onmessage) %) @worker-pool-arr))
+(defn lock-worker [w]
+  (set! (.-onmessage w) (fn [])))
