@@ -35,6 +35,3 @@
 (defn run [f]
   (.unbounded-unshift tasks f)
   (queue-dispatcher))
-
-(defn queue-delay [f delay]
-  (js/setTimeout f delay))
