@@ -20,7 +20,8 @@
 
 (defn ^:export wrk2 []
   (enable-console-print!)
-  (println "worker2"))
+  (println "worker2")
+  (+ 1 1))
 
 (defn do-some-wrk []
   (js/Promise. (fn [res rej]
@@ -31,20 +32,29 @@
 
 (defn do-some-wrk2 []
   (js/Promise. (fn [res rej]
-    (let [w (w/Worker)
-          wmeta (meta (var wrk2))]
-      ;;(.addEventListener w "message" #(res (worker.worker/*deserialize* (.-data %))))
-      (.postMessage w (cljs.core/clj->js [(:ns wmeta) (:name wmeta)]))
-      ))))
+    (dispatch/run
+      (fn [w]
+        (let [wmeta (meta (var wrk2))]
+          (.addEventListener w "message" #(do
+            (set! (.-onmessage w) nil)
+            (res (worker.worker/*deserialize* (.-data %)))))
+          (.postMessage w (cljs.core/clj->js [(:ns wmeta) (:name wmeta)]))
+      ))))))
 
 
 (defn ^:export main []
   (enable-console-print!)
 (w/add-worker)
 (w/add-worker)
-  (dispatch/run #(println %))
-  (dispatch/run #(println %))
-  (dispatch/run #(println %))
+(.then (do-some-wrk2) #(println %))
+(.then (do-some-wrk2) #(println %))
+(.then (do-some-wrk2) #(println %))
+(.then (do-some-wrk2) #(println %))
+(.then (do-some-wrk2) #(println %))
+(.then (do-some-wrk2) #(println %))
+  ; (dispatch/run #(println %))
+  ; (dispatch/run #(println %))
+  ; (dispatch/run #(println %))
 
   ; (async)
 
