@@ -52,25 +52,6 @@
 (.then (do-some-wrk2) #(println %))
 (.then (do-some-wrk2) #(println %))
 (.then (do-some-wrk2) #(println %))
-  ; (dispatch/run #(println %))
-  ; (dispatch/run #(println %))
-  ; (dispatch/run #(println %))
 
-  ; (async)
-
-  ; (enable-console-print!)
-  ; (w/add-worker)
-  ; (w/add-worker)
-  ; (println (map #(.. % -onmessage) @w/worker-pool-arr))
-  ; (println (w/get-worker))
-  ; (println (map #(.. % -onmessage) @w/worker-pool-arr))
-  ; (println (w/get-worker))
-  ; (println (map #(.. % -onmessage) @w/worker-pool-arr))
-  ; (println (w/get-worker))
-  ; (println "done")
-  ; (println (js/setTimeout #() 100))
-  ; (def strt (.getTime (js/Date.)))
-  ;
-  ; (do-some-wrk)
 
   )
