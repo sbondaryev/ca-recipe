@@ -560,3 +560,10 @@ apply +
      (map #(next-generation board %))
      (partition (count board))
      (map #(apply str %)))))
+
+;;95 To Tree, or not to Tree
+(defn f [xs]
+  (cond
+    (nil? xs) true
+    (and (sequential? xs) (= (count xs) 3)) (and (f (second xs)) (f (last xs)))
+    :else false))
