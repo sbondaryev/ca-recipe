@@ -30,3 +30,22 @@
   {:pre [(not (nil? loc))]}
   (if (zip/left loc)
     (zip/branch? (zip/left loc))))
+
+(defn push-down-indents
+  "Given a particular location in the tree - turn leading spaces into three nodes."
+  [loc]
+  (if (zip/end? loc)
+    (zip/root loc)
+    (if (has-indent loc)
+      (let [reduced-indent-node (drop-one-indent (zip/node loc))]
+        (if (is-left-branch loc)
+          (recur (-> loc
+                     zip/left
+                     (zip-arround-child  reduced-indent-node)
+                     zip/right
+                     zip/remove))
+          (recur (-> loc
+                     (zip/insert-letf [])
+                     zip/remove
+                     (zip/append-child reduced-indent-node)))))
+      (recur (zip/next loc)))))
