@@ -49,3 +49,17 @@
                      zip/remove
                      (zip/append-child reduced-indent-node)))))
       (recur (zip/next loc)))))
+
+(defn transform-to-sass-nested-three-whitout-zipper
+  "Given a sass string, return a nested vector"
+  [sass-string]
+  {:pre [(= (class sass-str) java.lang.String)]}
+  (push-down-indents (zip/vector-zip (get-lines sass-str))))
+
+(defn transform-to-sass-nested-tree
+  "Given a sass string, return a zipper."
+  [sass-str]
+  {:pre [(= (class sass-str) java.lang.String)]
+   :post [(not (nil? %))]}
+  (zip/vector-zip (transform-to-sass-nested-tree-without-zipper sass-str)))
+   
