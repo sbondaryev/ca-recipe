@@ -1,4 +1,4 @@
-(ns saas-dsl.core
+(ns sass-dsl.core
   (:require [clojure.test :refer :all]
             [sass-dsl.parse :as parse]
             [sass-dsl.render :as render]
@@ -8,9 +8,9 @@
   "Given a basic set of SASS, transfom it to CSS."
   [sass-val]
   (-> sass-val
-      parse/transform-to-saas-nested-tree
+      parse/transform-to-sass-nested-tree
       transform/flatten-colon-suffixes
-      transform/saas-de-nest-flattentd-colons-vec-zip
+      transform/sass-de-nest-flattentd-colons-vec-zip
       render/output-css))
 
 (defn sass-to-css

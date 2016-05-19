@@ -1,4 +1,4 @@
-(ns saas-dsl.core-test
+(ns sass-dsl.core-test
   (:require [clojure.test :refer :all]
             [sass-dsl.core :as core]
             [sass-dsl.common-test :as common-test]))
@@ -12,6 +12,6 @@
 (deftest basic-css-consants-test
   (testing "Ensure we get CSS."
     (is (.contains
-         (core/saas-to-css common-test/basic-css-constants)
+         (core/sass-to-css common-test/basic-css-constants)
          ".content-navigation {\n"))))
 
