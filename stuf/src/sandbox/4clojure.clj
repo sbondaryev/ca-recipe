@@ -578,7 +578,22 @@ apply +
                                   (f (second l) (last r))
                                   (f (last l) (second r)))
      :else false)))
+;; wow solution
 ;;#(let [t (fn t [[v l r]] [v (if r (t r)) (if l (t l))])
 ;;       [_ l r] %]
 ;;   (= l (t r)))
-    
+
+;;97 Pascal's Triangle
+(letfn [(f [xs]
+          (lazy-seq
+           (if (sequential? xs)
+             (let [line (map #(apply + %) (partition 2 1 (concat [0] xs [0])))]
+               (cons line (f line)))
+             (cons '(1) (f '(1))))))]
+  #(nth (f nil) (dec %)))
+;; wow solution
+;;(fn [n]
+;;  (nth
+;;   (iterate #(map +' (concat [0] %) (concat % [0])) [1])
+;;   (dec n)))
+
