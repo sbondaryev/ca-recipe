@@ -567,3 +567,18 @@ apply +
     (nil? xs) true
     (and (sequential? xs) (= (count xs) 3)) (and (f (second xs)) (f (last xs)))
     :else false))
+
+;;96 Beauty is Symmetry
+(defn f
+  ([xs] (f (second xs) (last xs)))
+  ([l r]
+   (cond
+     (and (not (sequential? l)) (not (sequential? r))) (= l r)
+     (and (sequential? l) (sequential? r)) (and (= (first l) (first r))
+                                  (f (second l) (last r))
+                                  (f (last l) (second r)))
+     :else false)))
+;;#(let [t (fn t [[v l r]] [v (if r (t r)) (if l (t l))])
+;;       [_ l r] %]
+;;   (= l (t r)))
+    
