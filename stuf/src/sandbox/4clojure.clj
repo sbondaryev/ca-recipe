@@ -600,3 +600,10 @@ apply +
 ;;98 Equivalence Classes
 #(set (map set (vals (group-by %1 %2))))
 
+;;99 Product Digits
+(letfn [(f [n xs]
+          (if (= 0 (int (/ n 10)))
+            (cons (mod n 10) xs)
+            (f (int (/ n 10)) (cons (mod n 10) xs))))]
+  #(f (* %1 %2) []))
+  
