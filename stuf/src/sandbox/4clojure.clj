@@ -597,3 +597,6 @@ apply +
 ;;   (iterate #(map +' (concat [0] %) (concat % [0])) [1])
 ;;   (dec n)))
 
+;;98 Equivalence Classes
+#(set (map set (vals (group-by %1 %2))))
+
