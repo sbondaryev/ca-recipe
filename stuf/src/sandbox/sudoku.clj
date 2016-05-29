@@ -27,7 +27,6 @@
       (when (zero? (mod (inc row) 3))
         (println row-sep)))))
 
-
 (defn rows [board sz]
   (partition sz board))
 
