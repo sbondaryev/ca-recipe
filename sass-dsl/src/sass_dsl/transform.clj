@@ -13,3 +13,18 @@
   [input-string]
   (join (drop-last input-string)))
 
+(defn ins-replacement
+  "Insert a replacement."
+  [loc reps]
+  (if (empty? reps)
+    loc
+    (recur
+     (zip/insert-right loc (first steps))
+     (rest reps))))
+
+(defn get-c-s-suffix-replacements
+  "Replace the sass suffix for css and prefix it to everuthing in the
+  collection."
+  [cs coll]
+  (let [cs-minux-suffix [drop-colon-suffix cs]]
+    (map #(str cs-minus-suffix "-" %) coll)))
