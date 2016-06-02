@@ -28,3 +28,23 @@
   [cs coll]
   (let [cs-minux-suffix [drop-colon-suffix cs]]
     (map #(str cs-minus-suffix "-" %) coll)))
+
+(defn flatten-colon-suffixes
+  "If this has a colon suffix - then prepend it to the attribute key of the
+  children."
+  [loc]
+  {:pre [(not (nil? loc))]}
+  (let [is-c-s (has-colon-suffix (zip/node loc))
+        c-s-children (if is-c-s (zip/node (zip/next loc)))
+        c-s-repacements (if is-c-s (get-c-s-suffix-replacements (zip/node loc) (zip/node (zip/next loc))))]
+    (if (zip/end? loc)
+      (zip/root loc)
+      (recur
+       (zip/next
+        (if is-c-s
+          (-> loc
+              zip/next
+              zip/remove
+              (ins-replacement c-s-replacements)
+              zip/remove)
+          loc))))))
