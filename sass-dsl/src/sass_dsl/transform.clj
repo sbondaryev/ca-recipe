@@ -48,3 +48,12 @@
               (ins-replacement c-s-replacements)
               zip/remove)
           loc))))))
+
+(defn is-parent-selector
+  "Is the parent at the zipper location a selector?"
+  [loc]
+  {:pre [(not (nil? loc))]}
+  (if (and
+       (common/is-element loc)
+       (common/get-parent loc))
+    (common/is-selector (common/get-parrent loc))))
