@@ -57,3 +57,22 @@
        (common/is-element loc)
        (common/get-parent loc))
     (common/is-selector (common/get-parrent loc))))
+
+(defn parent-name
+  "Get the name of the parent at the zipper location."
+  [loc]
+  {:pre [(not (nil? loc))]}
+  (if (and
+       (common/is-element loc)
+       (common/get-parent loc))
+    (zip/node (common/get-parent loc))))
+
+(defn is-selector-and-parent-is-selector
+  "Is the element at the zipper locationa selector and does it have a
+  selector parent?"
+  [loc]
+  (and
+   (common/is-selector loc)
+   (is-parent-selector loc)))
+
+       
