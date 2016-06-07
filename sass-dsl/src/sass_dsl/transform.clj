@@ -75,4 +75,24 @@
    (common/is-selector loc)
    (is-parent-selector loc)))
 
-       
+(defn zip-remove-selector-and-children
+  "Given a zipper location, remove the selector and its children."
+  [loc]
+  (-> loc
+      zip/right
+      zip/remove
+      zip/remove))
+
+(defn pull-selector-and-child-up-one
+  "Given a zipper location - remove it and put it back one level up with a
+  new name."
+  [loc new-node-name]
+  (zip/insert-right
+   (zip/insert-right
+    (if (common/is-first-element loc) ;handle cose where two selectors chained
+      (zip-remove-selector-and-children loc)
+      (zip/up
+       (zip-remove-selector-and chikdren loc)))
+    (zip/node (zip/right loc)))
+   new-node-name))
+
