@@ -96,3 +96,22 @@
     (zip/node (zip/right loc)))
    new-node-name))
 
+(defn sass-de-nest
+  "Flatten out selectors and attributes, prefixing the parent names."
+  [loc]
+  {:pre [(not (nil? loc))]}
+  (let [is-element (common/is-element loc)
+        is-selector (if is-element (common/is-selector loc))
+        has-parent (common/get-parent loc)
+        parent-is-selector (is-parent-selector loc)
+        parent-name (parent-name loc)
+        is-selector-and-parent-is-selector (is-selecor-and-parent-is-selector loc)
+        node-name (if is-element (zip/node loc))
+        new-node-name (if (and is-element has-parent)
+                        (if is-selector-and-parent-is-selecor (str parent-name " " node-name)))]
+    (if (zip/end? loc)
+      (zip/root loc)
+      (if is-selecor-and-parent-is-selecor
+        (recur
+         (pull-selecor-and-child-up-one loc new-node-name))
+        (recur (zip/next loc))))))
