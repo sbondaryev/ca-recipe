@@ -115,3 +115,15 @@
         (recur
          (pull-selecor-and-child-up-one loc new-node-name))
         (recur (zip/next loc))))))
+
+(defn sass-de-nest-flattened-colors-vec-zip
+  "Wrap the sass-de-nest in a vector zipper."
+  [colon-vec]
+  (zip/vector-zip (sass-ds-nest (zip/vector-zip colon-vec))))
+
+(defn is-constant-declaration
+  "Is this a sass constant declaration"
+  [tree-node]
+  (if (string? tree-node)
+    (= \$ (first (take 1 (clojure.string/triml tree-node))))))
+
