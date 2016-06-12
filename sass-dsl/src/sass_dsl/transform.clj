@@ -127,3 +127,20 @@
   (if (string? tree-node)
     (= \$ (first (take 1 (clojure.string/triml tree-node))))))
 
+(defn get-map-pair
+  "Given a space separated string return a map key value pair."
+  [input-dec]
+  (let [[the-key the-val] (split (triml input-dec) #"\ ")]
+    {(drop-colon-suffix the-key) the-val}))
+
+(defn extract-constants
+  "Given a zipper location - return the sass content declarations as a map."
+  [loc previous-c-d-map]
+  (let [is-c-d (is-constant-declaration (zip/node loc))
+        c-d-pair (if is-c-d (get-map-pair (zip/node loc)))
+        c-d-map (if is-c-d (conj c-d-pair previous-c-d-map))
+        curr-map (if is-c-d c-d-map previous-c-d-map)]
+    (if (zip/end? loc)
+      curr-map
+      (recur
+       (zip/next loc) curr-map))))
