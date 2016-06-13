@@ -144,3 +144,26 @@
       curr-map
       (recur
        (zip/next loc) curr-map))))
+
+(defn strip-constant-declarations
+  "Given a zipper location - remove the sass constant declarations."
+  [loc]
+  (let [next-loc (zip/next loc)
+        is-c-d (is-constant-declaration (zip/node next-loc))]
+    (if (zip/end? loc)
+      (zip/root loc)
+      (recur
+       (if is-c-d
+         (if (empty? (zip/node (zip/remove next-loc)))
+           (zip/remove (zip/remove next-loc))
+           (zip/remove next-loc))
+         next-loc)))))
+
+(defn is-constant-reference
+  "Given a zipper location - see if this refers to a sass constant."
+  [loc]
+  (if (and (string? loc)
+           (not (is-constant-declaration loc)))
+    (.contains loc "§")))
+
+           
