@@ -601,9 +601,18 @@ apply +
 #(set (map set (vals (group-by %1 %2))))
 
 ;;99 Product Digits
-(letfn [(f [n xs]
-          (if (= 0 (int (/ n 10)))
-            (cons (mod n 10) xs)
-            (f (int (/ n 10)) (cons (mod n 10) xs))))]
+(letfn
+    [(f [n xs]
+       (if (= 0 (int (/ n 10)))
+         (cons (mod n 10) xs)
+         (f (int (/ n 10)) (cons (mod n 10) xs))))]
   #(f (* %1 %2) []))
   
+;;100 Least Common Multiple
+(defn f [& xs]
+  (let [g (fn [n mult]
+            (if-let [lcm (first (apply clojure.set/intersection mult))]
+              lcm
+              (recur (inc n) (map conj mult (map #(* n %) xs)))))]
+    (g 1 (repeat (count xs) #{}))))
+
