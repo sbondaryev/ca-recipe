@@ -166,4 +166,13 @@
            (not (is-constant-declaration loc)))
     (.contains loc "§")))
 
+(defn replace-const-references
+  "Given a string of references to constants, replace them with the values
+  from the constant declaration in the map."
+  [start-staring my-map]
+  (letfn [(replace-values [current-string [reference value]]
+            (if (.contains current-string reference)
+              (str/replace current-string reference value)
+              current-string))]
+    (reduce replace-values start-string my-map)))
            
