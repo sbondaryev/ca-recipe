@@ -176,3 +176,28 @@
               current-string))]
     (reduce replace-values start-string my-map)))
            
+(defn replace-constants-structure
+  "Given a zipper location and a replacement map for constant references,
+  step through and replace them."
+  [loc const-refs-map]
+  (let [is-c-r (is-constant-reference (zip/node loc))]
+    (if (zip/end? loc)
+      (zip/root loc)
+      (recur
+       (zip/next
+        (if is-c-r
+          (zip/replace loc
+                       (replace-const-references (zip/node loc)
+                                                 const-refs-map))
+          loc))
+       const-refs-map))))
+
+(defn replaced-constants-structure-vec-zip
+  "Constatnt reference replacement - with a zipper ofr the input location."
+  [loc const-refs-map]
+  (replaced-constants-structure (zip/vector-zip loc) const-refs-map))
+
+(defn replaced-constnts-structure-vec-zip-vz
+  "Constant reference replacement - with a zipper for the return output."
+  [loc const-refs-map]
+  (zip/vector-zip (replaced-constants-structure-vec-zip loc const-refs-map)))
