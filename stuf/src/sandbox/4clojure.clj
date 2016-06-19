@@ -616,3 +616,33 @@ apply +
               (recur (inc n) (map conj mult (map #(* n %) xs)))))]
     (g 1 (repeat (count xs) #{}))))
 
+;;101 Levenshtein Distance
+;; (optimized)
+(fn [x y]
+  (letfn
+      [(levenshtein [mem s1 s2]
+         (let [l1 (count s1)
+               l2 (count s2)]
+           (cond (zero? l1) l2
+                 (zero? l2) l1
+                 :else
+                 (let [cost (if (= (first s1) (first s2)) 0 1)]
+                   (min (inc (mem mem (rest s1) s2))
+                        (inc (mem mem s1 (rest s2)))
+                        (+ cost
+                           (mem mem (rest s1) (rest s2))))))))]
+    (levenshtein (memoize levenshtein) x y)))
+;; wow solution
+;;(fn [w1 w2]
+;;  (letfn [
+;;          (dist [d w1 w2]
+;;            (cond
+;;              (empty? w1) (count w2)
+;;              (empty? w2) (count w1)
+;;              :else
+;;              (min
+;;               (inc (d d (rest w1) w2))
+;;               (inc (d d w1 (rest w2)))
+;;               (+ (if (= (first w1) (first w2)) 0 1)
+;;                  (d d (rest w1) (rest w2))))))]
+;;    (dist (memoize dist) w1 w2)));;
