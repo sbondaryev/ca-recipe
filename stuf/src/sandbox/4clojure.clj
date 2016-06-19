@@ -633,19 +633,17 @@ apply +
                            (mem mem (rest s1) (rest s2))))))))]
     (levenshtein (memoize levenshtein) x y)))
 ;; wow solution
-;;(fn [w1 w2]
-;;  (letfn [
-;;          (dist [d w1 w2]
+;;(fn levenshtein-distance [s t]
+;;  (let [f (fn [f s t]
 ;;            (cond
-;;              (empty? w1) (count w2)
-;;              (empty? w2) (count w1)
-;;              :else
-;;              (min
-;;               (inc (d d (rest w1) w2))
-;;               (inc (d d w1 (rest w2)))
-;;               (+ (if (= (first w1) (first w2)) 0 1)
-;;                  (d d (rest w1) (rest w2))))))]
-;;    (dist (memoize dist) w1 w2)));;
+;;              (empty? s) (count t)
+;;              (empty? t) (count s)
+;;              :else (let [cost (if (= (first s) (first t)) 0 1)]
+;;                      (min (inc (f f (rest s) t))
+;;                           (inc (f f s (rest t)))
+;;                           (+ cost (f f (rest s) (rest t)))))))
+;;        g (memoize f)]
+;;    (g g s t)))
 
 ;;102 intoCamelCase
 (defn f[w]
