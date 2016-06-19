@@ -646,3 +646,11 @@ apply +
 ;;               (+ (if (= (first w1) (first w2)) 0 1)
 ;;                  (d d (rest w1) (rest w2))))))]
 ;;    (dist (memoize dist) w1 w2)));;
+
+;;102 intoCamelCase
+(defn f[w]
+  (let [[fst & rst] (clojure.string/split w #"-")]
+    (str fst (apply str (map clojure.string/capitalize rst)))))
+;; wow solution
+;;(fn [s] (clojure.string/replace s #"-(\w)" #(str (.toUpperCase (% 1)))))
+
