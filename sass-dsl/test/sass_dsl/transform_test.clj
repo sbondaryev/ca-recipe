@@ -19,4 +19,10 @@
          ["table.h1" ["margin: 2em 0" "td.ln" ["text-align: right"]] "li"
           ["font-size:1.2em" "font-weight: bold" "font-family: serif"]]))))
 
+;;refered to in render-test
+(def sass-denested-simpler-nesting-flattened-colons
+  "wrap the sass-de-nest in a vector zipper"
+  (transform/sass-de-nest-flattened-colons-vec-zip
+   sass-simpler-nesting-flattened-colons))
+
             
