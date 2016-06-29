@@ -15,3 +15,7 @@
                         (multiplicand exp))))
         (else
          (println "unknown expresion type -- DERIV" exp))))
+
+(defn make-sum [a1 a2] (list '+ a1 a2))
+(defn make-product [a1 a2] (list '* a1 a2))
+
