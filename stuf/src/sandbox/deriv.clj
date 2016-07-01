@@ -1,5 +1,8 @@
 (ns sandbox.deriv)
 
+(defn =number? [exp num]
+  (and (number? exp) (= exp num)))
+
 (defn variable? [x] (symbol? x))
 (defn same-variable? [v1 v2]
   (and (variable? v1) (variable? v2) (= v1 v2)))
