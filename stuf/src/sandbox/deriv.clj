@@ -7,8 +7,15 @@
 (defn same-variable? [v1 v2]
   (and (variable? v1) (variable? v2) (= v1 v2)))
 
-(defn make-sum [a1 a2] (list '+ a1 a2))
-(defn make-product [a1 a2] (list '* a1 a2))
+(defn make-sum [a1 a2]
+  (cond (=number? a1 0) a2
+        (=number? a2 0) a1
+        :else (list '+ a1 a2)))
+(defn make-product [a1 a2]
+  (cond (or (=number? m1 0) (=number? m2 0)) 0
+        (=number? m1 1) m2
+        (=number? m2 1) m1
+        :else (list '* a1 a2)))
 
 (defn sum? [[x :as s]]
   (and (seq s) (= x '+)))
