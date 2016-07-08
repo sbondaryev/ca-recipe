@@ -49,4 +49,32 @@
   (transform/strip-constant-declarations
    sass-constants-nested-tree))
 
+(deftest remove-constants-test
+  (testing "Ensure we stripped the constant declarations."
+    (is (=
+         sass-constants-stripped-nested-tree
+         [".content-navigation" ["border-color: $blue"
+                                 "color: darken($blue, 9%)"]
+          ".border" ["padding: $margin / 2"
+                     "margin: $margin / 2"
+                     "border-color: $blue"]]))))
+
+(deftest remove-constants
+  (testing "Ensure stripped the constant declarations."
+    (is (=
+         (transform/replace-const-references "border-color: $blue" {"$blue" "#3bbfce" "$margin" "16px"})
+         "border-color: #3bbfce"))))
+
+(deftest replaced-constants-structure
+  (testing "Ensure we replaced the constants structure."
+    (is (=
+         (transform/replaced-constants-structure-vec-zip
+          sass-constants-stripped-nested-tree
+          constant-map)
+         [".constant-navigation" ["bonrder-color: #3ddfce"
+                                  "color: darken(#3bbfce, 9%)"]
+          ".border" ["padding: 16px / 2"
+                     "margin: 16px / 2"
+                     "border-color: #3bbfce"]]))))
+
             
