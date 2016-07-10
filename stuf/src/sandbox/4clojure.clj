@@ -652,3 +652,14 @@ apply +
 ;; wow solution
 ;;(fn [s] (clojure.string/replace s #"-(\w)" #(str (.toUpperCase (% 1)))))
 
+;;103
+(defn combinations [m n]
+  (letfn
+      [(comb-aux [m start]
+         (if (= 1 m)
+           (for [x (range start n)]
+             (list x))
+           (for [x (range start n)
+                 xs (comb-aux (dec m) (inc x))]
+             (cons x xs))))]
+    (comb-aux m 0)))
