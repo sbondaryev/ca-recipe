@@ -652,14 +652,14 @@ apply +
 ;; wow solution
 ;;(fn [s] (clojure.string/replace s #"-(\w)" #(str (.toUpperCase (% 1)))))
 
-;;103
-(defn combinations [m n]
-  (letfn
-      [(comb-aux [m start]
-         (if (= 1 m)
-           (for [x (range start n)]
-             (list x))
-           (for [x (range start n)
-                 xs (comb-aux (dec m) (inc x))]
-             (cons x xs))))]
-    (comb-aux m 0)))
+;; 103 Generating k-combinations
+(defn f [m st]
+  (letfn [(comb [m [fst & rst :as xs]]
+            (cond
+              (= m 1) (map hash-set  xs)
+              (= (count xs) m) (list (set xs))
+              (< (count xs) m) '() 
+              :else (concat
+                     (map #(conj % fst) (comb (dec m) rst))
+                     (comb m rst))))]
+  (set (comb m (seq st)))))
