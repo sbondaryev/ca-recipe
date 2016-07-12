@@ -663,3 +663,25 @@ apply +
                      (map #(conj % fst) (comb (dec m) rst))
                      (comb m rst))))]
   (set (comb m (seq st)))))
+
+;;104 Write Roman Numerals
+(fn [a]
+  (let [r [\I \V \X \L \C \D \M]
+        a->r (fn [d [i v x]]
+               (let [d->r {1 [i]
+                           2 [i i]
+                           3 [i i i]
+                           4 [i v]
+                           5 [v]
+                           6 [v i]
+                           7 [v i i]
+                           8 [v i i i]
+                           9 [i x]}]
+                 (apply str (d->r d))))
+        digits (fn [n] (map #(- (int %) (int \0)) (str n)))]
+    (->> (map a->r (reverse (digits a)) (partition-all 3 2 r ))
+         (reverse)
+         (apply str))))
+;; wow solution
+;; #(clojure.pprint/cl-format nil "~@R" %)
+    
