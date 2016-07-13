@@ -685,3 +685,10 @@ apply +
 ;; wow solution
 ;; #(clojure.pprint/cl-format nil "~@R" %)
     
+;;105
+(defn f[v]
+  (->>
+   (partition-by keyword? v)
+   (partition 2)
+   (map (fn [[[f] s]] (vector f (vec s))))
+   (into {})))
