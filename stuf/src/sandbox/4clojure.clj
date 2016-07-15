@@ -685,10 +685,20 @@ apply +
 ;; wow solution
 ;; #(clojure.pprint/cl-format nil "~@R" %)
     
-;;105
-(defn f[v]
-  (->>
-   (partition-by keyword? v)
-   (partition 2)
-   (map (fn [[[f] s]] (vector f (vec s))))
-   (into {})))
+;;105 Identify keys and values
+(letfn
+    [(aux [[fst & rst :as xs] [[fstm] :as m]]
+       (cond
+         (not (seq xs)) m
+         (keyword? fst) (aux rst (cons [fst] m))
+         :else (aux rst (cons [fstm fst] m))))]
+  (fn [sx]
+    (reduce
+     (fn [m [fst & rst]] (update-in m [fst] (comp vec concat) rst))
+     {} (reverse (aux sx [])))))
+;;wow solution
+;;(fn mf [s]
+;;  (if (seq s)
+;;    (merge {(first s) (take-while (complement keyword?) (rest s))}
+;;           (mf (drop-while (complement keyword?) (rest s)))) {} ))
+
