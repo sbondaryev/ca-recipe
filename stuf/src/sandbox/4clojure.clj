@@ -702,3 +702,12 @@ apply +
 ;;    (merge {(first s) (take-while (complement keyword?) (rest s))}
 ;;           (mf (drop-while (complement keyword?) (rest s)))) {} ))
 
+;;106 Number Maze
+(letfn [(aux [x y n]
+          (cond
+            (= n 0) nil
+            (= x y) (list x)
+            (aux (* x 2) y (dec n)) (cons x (aux (* x 2) y (dec n)))
+            (aux (+ x 2) y (dec n)) (cons x (aux (+ x 2) y (dec n)))
+            (and (even? x) (aux (/ x 2) y (dec n))) (cons x (aux (/ x 2) y (dec n)))))]
+  (fn f [x y] (count (some #(aux x y %) (range)))))
