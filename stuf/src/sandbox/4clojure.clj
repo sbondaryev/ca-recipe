@@ -711,3 +711,6 @@ apply +
             (aux (+ x 2) y (dec n)) (cons x (aux (+ x 2) y (dec n)))
             (and (even? x) (aux (/ x 2) y (dec n))) (cons x (aux (/ x 2) y (dec n)))))]
   (fn f [x y] (count (some #(aux x y %) (range)))))
+
+;;107 Simple closures
+(fn [n] #(reduce * (repeat n %)))
