@@ -714,3 +714,11 @@ apply +
 
 ;;107 Simple closures
 (fn [n] #(reduce * (repeat n %)))
+
+;;108 Lazy Searching
+(defn f [& args]
+  (let [mx (apply max (map first args))]
+    (if (apply = (map first args))
+      mx
+      (apply f (map #(if (< (first %) mx) (rest %) %) args)))))
+
