@@ -702,15 +702,15 @@ apply +
 ;;    (merge {(first s) (take-while (complement keyword?) (rest s))}
 ;;           (mf (drop-while (complement keyword?) (rest s)))) {} ))
 
-;;106 Number Maze
-(letfn [(aux [x y n]
+;;106 Number Maze (optimized)
+(letfn [(aux [mem x y n]
           (cond
             (= n 0) nil
             (= x y) (list x)
-            (aux (* x 2) y (dec n)) (cons x (aux (* x 2) y (dec n)))
-            (aux (+ x 2) y (dec n)) (cons x (aux (+ x 2) y (dec n)))
-            (and (even? x) (aux (/ x 2) y (dec n))) (cons x (aux (/ x 2) y (dec n)))))]
-  (fn f [x y] (count (some #(aux x y %) (range)))))
+            (mem mem (* x 2) y (dec n)) (cons x (mem mem (* x 2) y (dec n)))
+            (mem mem (+ x 2) y (dec n)) (cons x (mem mem (+ x 2) y (dec n)))
+            (and (even? x) (mem mem (/ x 2) y (dec n))) (cons x (mem mem (/ x 2) y (dec n)))))]
+  (defn ff [x y] (count (some #(aux (memoize aux) x y %) (range)))))
 
 ;;107 Simple closures
 (fn [n] #(reduce * (repeat n %)))
