@@ -722,3 +722,9 @@ apply +
       mx
       (apply f (map #(if (< (first %) mx) (rest %) %) args)))))
 
+;;109 Sequence of pronunciations
+(defn f [xs]
+  (lazy-seq
+   (let [xss (mapcat #(vector (count %) (first %)) (partition-by identity xs))]
+        (cons xss (f xss)))))
+         
