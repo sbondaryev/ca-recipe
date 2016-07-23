@@ -722,13 +722,30 @@ apply +
       mx
       (apply f (map #(if (< (first %) mx) (rest %) %) args)))))
 
-;;109 Sequence of pronunciations
+;;110 Sequence of pronunciations
 (defn f [xs]
   (lazy-seq
    (let [xss (mapcat #(vector (count %) (first %)) (partition-by identity xs))]
         (cons xss (f xss)))))
          
-;;110
-(defn f [p]
-  (as-> (map #(clojure.string/replace % #" " "") p) cp
-    (concat cp (apply map str cp))))
+;;111 Crossword puzzle
+(letfn 
+    [(cmpr [[fw & rw :as word] [fp & rp :as path]]
+       (cond
+         (not= (count word) (count path)) false
+         (not (seq path)) true
+         (or (= \_ fp) (= fp fw)) (cmpr rw rp)
+         :else false))]
+  (fn [word puzzle]
+    (->> (map #(clojure.string/replace % #" " "") puzzle)
+         (#(concat % (if (> (count %) 1) (apply map str %))))
+         (mapcat #(clojure.string/split % #"#"))
+         (map #(cmpr word %))
+         (some identity)
+         (boolean))))
+;;wow solution
+;;(fn[w l] (->>(map #(replace {\space""\_\.} %)l)
+;;             (#(concat % (apply map vector %)))
+;;             (mapcat #(.split(apply str %)"#"))
+;;             (some #(re-matches(re-pattern%)w))
+;;             boolean))
