@@ -728,3 +728,7 @@ apply +
    (let [xss (mapcat #(vector (count %) (first %)) (partition-by identity xs))]
         (cons xss (f xss)))))
          
+;;110
+(defn f [p]
+  (as-> (map #(clojure.string/replace % #" " "") p) cp
+    (concat cp (apply map str cp))))
