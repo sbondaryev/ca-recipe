@@ -749,3 +749,21 @@ apply +
 ;;             (mapcat #(.split(apply str %)"#"))
 ;;             (some #(re-matches(re-pattern%)w))
 ;;             boolean))
+
+;;112 Sequs Horribilis
+(defn f [n [fst & rst :as xs]]
+  (cond
+    (not (seq xs)) nil
+    (sequential? fst) (let [sub (f n fst)]
+                        (cons sub (f (- n (apply + (flatten sub))) rst)))
+    (>= (- n fst) 0) (cons fst (f (- n fst) rst))
+    :else '()))
+;;wow solution
+;;(defn dcl [l x]
+;;  (loop [c [] [x1 & rx] x]
+;;    (let [rc (- l (apply + (flatten c)))]
+;;      (cond
+;;        (nil? x1) c
+;;        (coll? x1) (recur (conj c (dcl rc x1)) rx)
+;;        (<= x1 rc) (recur (conj c x1) rx)
+;;        :else c))))
