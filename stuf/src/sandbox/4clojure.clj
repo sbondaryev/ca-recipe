@@ -772,3 +772,12 @@ apply +
 #(reify clojure.lang.ISeq
    (toString [_] (reduce str (interpose ", " (sort %&))))
    (seq [_] (if (empty? %&) nil (distinct %&))))
+
+;;114 Global take-while
+(defn f [n pred [fst & rst :as sx]]
+  (cond
+    (not (seq sx)) nil
+    (and (= n 1) (pred fst)) nil
+    :else (cons fst (f (if (pred fst) (- n 1) n) pred rst))))
+
+
