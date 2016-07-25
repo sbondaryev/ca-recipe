@@ -767,3 +767,8 @@ apply +
 ;;        (coll? x1) (recur (conj c (dcl rc x1)) rx)
 ;;        (<= x1 rc) (recur (conj c x1) rx)
 ;;        :else c))))
+
+;;113 Making Data Dance
+#(reify clojure.lang.ISeq
+   (toString [_] (reduce str (interpose ", " (sort %&))))
+   (seq [_] (if (empty? %&) nil (distinct %&))))
