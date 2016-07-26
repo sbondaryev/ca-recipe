@@ -781,3 +781,12 @@ apply +
     :else (cons fst (f (if (pred fst) (- n 1) n) pred rst))))
 
 
+;;115 The Balance of N
+(defn f [num]
+  (let [d (map #(- (int %) (int \0)) (str num))
+        c (count d)
+        m (quot c 2)]
+    (if (even? c)
+      (= (apply + (take m d)) (apply + (drop m d)))
+      (= (apply + (take m d)) (apply + (drop (inc m) d))))))
+   
