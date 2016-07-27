@@ -789,4 +789,28 @@ apply +
     (if (even? c)
       (= (apply + (take m d)) (apply + (drop m d)))
       (= (apply + (take m d)) (apply + (drop (inc m) d))))))
-   
+
+;;116 Prime Sandwich
+(defn f [n]
+  (let [prime? (fn [n] (when (> n 1) (not (some integer? (map #(/ n %) (range 2 n))))))
+        lprime (fn [n]
+                 (cond (= n 1) nil
+                       (prime? n) n
+                       :else (recur (dec n))))
+        rprime (fn [n]
+                 (if (prime? n)
+                   n
+                   (recur (inc n))))]
+    (if (prime? n)
+      (if-let [lp (lprime (dec n))]
+        (= n (/ (+ lp (rprime (inc n))) 2))
+        false)
+      false)))
+;;wow solution
+;;(fn [n]
+;;  (and (> n 3)
+;;       (let [p (fn [x] (every? #(< 0 (mod x %)) (range 2 x)))
+;;             b (first (filter p (reverse (range 2 n))))
+;;             a (first (filter p (drop (+ n 1) (range))))]
+;;         (and (p n) (= n (/ (+ a b) 2))))))
+
