@@ -814,3 +814,9 @@ apply +
 ;;             a (first (filter p (drop (+ n 1) (range))))]
 ;;         (and (p n) (= n (/ (+ a b) 2))))))
 
+;;117
+(defn neighbors [size yx]
+  (filter (fn [new-yx]
+            (every? #(< -1 % size) new-yx))
+          (map #(vec (map + yx %))
+               [[-1 0] [0 -1] [0 1] [1 0]])))
