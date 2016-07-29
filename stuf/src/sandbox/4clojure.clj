@@ -820,3 +820,9 @@ apply +
             (every? #(< -1 % size) new-yx))
           (map #(vec (map + yx %))
                [[-1 0] [0 -1] [0 1] [1 0]])))
+
+(defn find-m [[line & _ :as board]]
+  (for [x (range (count line))
+        y (range (count board))
+       :when (= \M (get-in board [y x]))]
+    [x y]))
