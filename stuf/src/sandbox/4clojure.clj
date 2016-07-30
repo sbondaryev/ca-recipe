@@ -826,3 +826,11 @@ apply +
         y (range (count board))
        :when (= \M (get-in board [y x]))]
     [x y]))
+
+(defn find-c [board pos]
+  (let [val (get-in board pos)]
+    (cond
+      (= val nil) false
+      (= val \C) true
+      :else (some #(find-c board %) (map #(map + pos %2) [[-1 0] [0 -1] [0 1] [1 0]])))))
+  
