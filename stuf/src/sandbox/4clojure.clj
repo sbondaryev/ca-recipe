@@ -814,25 +814,21 @@ apply +
 ;;             a (first (filter p (drop (+ n 1) (range))))]
 ;;         (and (p n) (= n (/ (+ a b) 2))))))
 
-;;117
-(defn neighbors [size yx]
-  (filter (fn [new-yx]
-            (every? #(< -1 % size) new-yx))
-          (map #(vec (map + yx %))
-               [[-1 0] [0 -1] [0 1] [1 0]])))
-
-(defn find-m [[line & _ :as board]]
-  (for [x (range (count line))
-        y (range (count board))
-       :when (= \M (get-in board [y x]))]
-    [x y]))
-
-(defn find-c [board pos path]
-  (println path)
-  (let [val (get-in board pos)]
-    (cond
-      (or (= val nil) (= val \#)) false
-      (some #{pos} path) false
-      (= val \C) true
-      :else (some #(find-c board % (cons pos path)) (map #(mapv + pos %) [[-1 0] [0 -1] [0 1] [1 0]])))))
-  
+;;117 For Science!
+(defn f [board]
+  (let [steps [[-1 0] [0 -1] [0 1] [1 0]]
+        find-c (fn [[line & _ :as board]]
+                 (first (for [x (range (count line))
+                              y (range (count board))
+                              :when (= \C (get-in board [y x]))]
+                          [y x])))
+        find-m (fn find-rec [board pos path]
+                 (let [val (get-in board pos)]
+                   (cond
+                     (or (= val nil) (= val \#)) false
+                     (some #{pos} path) false
+                     (= val \M) true
+                     :else (boolean (some
+                                     #(find-rec board % (cons pos path))
+                                     (map #(mapv + pos %) steps))))))]
+    (find-m board (find-c board) []))) 
