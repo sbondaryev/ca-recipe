@@ -832,3 +832,7 @@ apply +
                                      #(find-rec board % (cons pos path))
                                      (map #(mapv + pos %) steps))))))]
     (find-m board (find-c board) []))) 
+
+;;118 Re-implement Map
+(fn my-map [pred [fst & rst :as xs]]
+  (lazy-seq (when (seq xs) (cons (pred fst) (my-map pred rst)))))
