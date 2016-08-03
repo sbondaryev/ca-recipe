@@ -836,3 +836,17 @@ apply +
 ;;118 Re-implement Map
 (fn my-map [pred [fst & rst :as xs]]
   (lazy-seq (when (seq xs) (cons (pred fst) (my-map pred rst)))))
+
+
+;;119
+(defn f [xo]
+  (let [m* (fn [n m] (map #(* % n) m))
+        seed [[0 1] [1 0] [1 1] [-1 1]]
+        mult [-3 -2 1 2 3]
+        delta (map (fn [l] (map #(m* % l) mult)) seed)]
+    (for [x (range 3) y (range 3)] (map #(get-in xo (map + [x y] %)) delta))))
+
+
+
+
+  
