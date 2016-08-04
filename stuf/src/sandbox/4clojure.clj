@@ -838,13 +838,39 @@ apply +
   (lazy-seq (when (seq xs) (cons (pred fst) (my-map pred rst)))))
 
 
-;;119
-(defn f [xo]
+;;119 Win at Tic-Tac-Toe
+(defn f [trn xo]
   (let [m* (fn [n m] (map #(* % n) m))
+        l+ (fn [p l] (map #(map + p %) l))
         seed [[0 1] [1 0] [1 1] [-1 1]]
-        mult [-3 -2 1 2 3]
-        delta (map (fn [l] (map #(m* % l) mult)) seed)]
-    (for [x (range 3) y (range 3)] (map #(get-in xo (map + [x y] %)) delta))))
+        mult [-2 -1 1 2 ]
+        delta (map (fn [l] (map #(m* % l) mult)) seed)
+        lines (fn [p] (map #(l+ p %) delta))
+        check-ln (fn [ln] (filter identity (map #(get-in xo %) ln)))
+        check (fn [p] (->> (lines p)
+                           (map check-ln)
+                           (map #(cons trn %))
+                           (filter #(= 3 (count %)))
+                           (map set)
+                           (map count)
+                           (some #{1})))]
+    (set (for [x (range 3) y (range 3) :when (and (= :e (get-in xo [x y])) (check [x y]))] [x y]))))
+;; wow solution
+;;#(
+;;  reduce conj #{}
+;;  (for [x (range 3) y (range 3)
+;;       :when (and
+;;               (= :e (get-in %2 [x y]))
+;;               ((fn [[[a b c] [d e f] [g h i] :as x]]
+;;                  (some {[% % %] %}
+;;                        (list* [a d g] 
+;;                               [b e h]
+;;                               [c f i] 
+;;                               [a e i]
+;;                               [c e g] 
+;;                               x)))
+;;                (assoc-in %2 [x y] %)))] [x y]))
+
 
 
 
