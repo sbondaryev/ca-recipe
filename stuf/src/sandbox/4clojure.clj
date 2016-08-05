@@ -871,8 +871,8 @@ apply +
 ;;                               x)))
 ;;                (assoc-in %2 [x y] %)))] [x y]))
 
-
-
+;120
+(fn digits[n] (map #(- (int %) (int \0)) (str n)))
 
 
   
