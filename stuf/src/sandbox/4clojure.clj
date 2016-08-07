@@ -877,5 +877,12 @@ apply +
         pws (fn [d] (apply + (map #(* % %) d)))]
     (count (filter #(< % ((comp pws digits) %))  xs))))
 
-
-  
+;;121 Universal Computation Engine
+(defn evl
+  ([exp] (fn [env] (evl exp env)))
+  ([exp env]
+   (let [rslv (fn[exp env] (get (merge {'+ + '- - '/ / '* *} env) exp exp))]
+     (cond
+       (symbol? exp) (rslv exp env)
+       (list? exp) (apply (evl (first exp) env) (map #(evl % env) (rest exp)))
+       :else exp))))
