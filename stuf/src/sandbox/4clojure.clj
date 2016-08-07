@@ -886,3 +886,7 @@ apply +
        (symbol? exp) (rslv exp env)
        (list? exp) (apply (evl (first exp) env) (map #(evl % env) (rest exp)))
        :else exp))))
+
+;;122 Read a binary number
+#(Integer/parseInt % 2)
+
