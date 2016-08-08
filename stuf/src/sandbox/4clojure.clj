@@ -891,22 +891,26 @@ apply +
 #(Integer/parseInt % 2)
 
 ;;
+(def r '[[e e e e]
+         [e w b e]
+         [e b w e]
+         [e e e e]])
 (defn ray [f1 f2 s] (rest (iterate (fn [[y x]] [(f1 y) (f2 x)]) s)))
 (defn d1 [s]
-  (for [p (ray inc inc s) :let [[y x] p] :while (and (< y 4) (< x 4))] p))  
+  (for [p (ray inc inc s) :while (not= 'e (get-in r p))] (get-in r p)))
 (defn d2 [s]
-  (for [p (ray dec dec s) :let [[y x] p] :while (and (>= y 0) (>= x 0))] p))  
+  (for [p (ray dec dec s) :when (get-in r p)] (get-in r p)))
 (defn d3 [s]
-  (for [p (ray inc dec s) :let [[y x] p] :while (and (< y 4) (>= x 0))] p))  
+  (for [p (ray inc dec s) :when (get-in r p)] (get-in r p)))
 (defn d4 [s]
-  (for [p (ray dec inc s) :let [[y x] p] :while (and (>= y 0) (< x 4))] p))
+  (for [p (ray dec inc s) :when (get-in r p)] (get-in r p)))
 (defn v1 [s]
-  (for [p (ray dec identity s) :let [[y x] p] :while (>= y 0)] p))
+  (for [p (ray dec identity s) :when (get-in r p)] (get-in r p)))
 (defn v2 [s]
-  (for [p (ray inc identity s) :let [[y x] p] :while (< y 4)] p))
+  (for [p (ray inc identity s) :when (get-in r p)] (get-in r p)))
 (defn h1 [s]
-  (for [p (ray identity dec s) :let [[y x] p] :while (>= x 0)] p))
+  (for [p (ray identity dec s) :when (get-in r p)] (get-in r p)))
 (defn h2 [s]
-  (for [p (ray identity inc s) :let [[y x] p] :while (< x 4)] p))
+  (for [p (ray identity inc s) :when (get-in r p)] (get-in r p)))
 
 
