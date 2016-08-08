@@ -890,3 +890,23 @@ apply +
 ;;122 Read a binary number
 #(Integer/parseInt % 2)
 
+;;
+(defn ray [f1 f2 s] (rest (iterate (fn [[y x]] [(f1 y) (f2 x)]) s)))
+(defn d1 [s]
+  (for [p (ray inc inc s) :let [[y x] p] :while (and (< y 4) (< x 4))] p))  
+(defn d2 [s]
+  (for [p (ray dec dec s) :let [[y x] p] :while (and (>= y 0) (>= x 0))] p))  
+(defn d3 [s]
+  (for [p (ray inc dec s) :let [[y x] p] :while (and (< y 4) (>= x 0))] p))  
+(defn d4 [s]
+  (for [p (ray dec inc s) :let [[y x] p] :while (and (>= y 0) (< x 4))] p))
+(defn v1 [s]
+  (for [p (ray dec identity s) :let [[y x] p] :while (>= y 0)] p))
+(defn v2 [s]
+  (for [p (ray inc identity s) :let [[y x] p] :while (< y 4)] p))
+(defn h1 [s]
+  (for [p (ray identity dec s) :let [[y x] p] :while (>= x 0)] p))
+(defn h2 [s]
+  (for [p (ray identity inc s) :let [[y x] p] :while (< x 4)] p))
+
+
