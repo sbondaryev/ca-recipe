@@ -890,27 +890,18 @@ apply +
 ;;122 Read a binary number
 #(Integer/parseInt % 2)
 
-;;
+;;124
 (def r '[[e e e e]
          [e w b e]
          [e b w e]
          [e e e e]])
-(defn ray [f1 f2 s] (rest (iterate (fn [[y x]] [(f1 y) (f2 x)]) s)))
-(defn d1 [s]
-  (for [p (ray inc inc s) :while (not= 'e (get-in r p))] (get-in r p)))
-(defn d2 [s]
-  (for [p (ray dec dec s) :when (get-in r p)] (get-in r p)))
-(defn d3 [s]
-  (for [p (ray inc dec s) :when (get-in r p)] (get-in r p)))
-(defn d4 [s]
-  (for [p (ray dec inc s) :when (get-in r p)] (get-in r p)))
-(defn v1 [s]
-  (for [p (ray dec identity s) :when (get-in r p)] (get-in r p)))
-(defn v2 [s]
-  (for [p (ray inc identity s) :when (get-in r p)] (get-in r p)))
-(defn h1 [s]
-  (for [p (ray identity dec s) :when (get-in r p)] (get-in r p)))
-(defn h2 [s]
-  (for [p (ray identity inc s) :when (get-in r p)] (get-in r p)))
 
+(defn chk
+  ([[y x] fy fx] (chk [(fy y) (fx x)] fy fx []))
+  ([[y x :as p] fy fx res]
+   (cond
+     (= 'w (get-in r p)) (chk [(fy y) (fx x)] fy fx (conj res p))
+     (= 'b (get-in r p)) res
+     :else [])))
+  
 
