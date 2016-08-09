@@ -890,18 +890,30 @@ apply +
 ;;122 Read a binary number
 #(Integer/parseInt % 2)
 
-;;124
-(def r '[[e e e e]
-         [e w b e]
-         [e b w e]
-         [e e e e]])
-
-(defn chk
-  ([[y x] fy fx] (chk [(fy y) (fx x)] fy fx []))
-  ([[y x :as p] fy fx res]
-   (cond
-     (= 'w (get-in r p)) (chk [(fy y) (fx x)] fy fx (conj res p))
-     (= 'b (get-in r p)) res
-     :else [])))
+;;124 Analyze Reversi
+(defn f [r color]
+  (let [rcolor {'b 'w 'w 'b}
+        fxy (for [i [identity inc dec]
+                  j [identity inc dec]
+                  :when (not= i j identity)] [i j])
+        empty (for [y (range 0 (count r))
+                    x (range 0 (count (first r)))
+                    :when (= 'e (get-in r [y x]))] [y x])
+        flip-rec (fn flip-rec [[y x :as p] fy fx res]
+                   (cond 
+                     (= (rcolor color) (get-in r p))
+                     (flip-rec [(fy y) (fx x)]
+                               fy
+                               fx
+                               (conj res p))
+                     (= color (get-in r p)) res
+                     :else []))
+        flip (fn [[y x] [fy fx]]
+               (flip-rec [(fy y) (fx x)] fy fx []))
+        check-point (fn [point]
+                      (vector point (set (mapcat #(flip point %) fxy))))]
+    (->> (map #(check-point %) empty)
+         (remove (comp empty? second))
+         (into {}))))
   
 
