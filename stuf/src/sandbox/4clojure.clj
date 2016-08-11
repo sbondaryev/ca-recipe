@@ -915,5 +915,13 @@ apply +
     (->> (map #(check-point %) empty)
          (remove (comp empty? second))
          (into {}))))
-  
 
+;;125 Gus' Quinundrum
+(fn f
+  ([] (str (f (quote (list (quote fn) (quote f) (list [] (list (quote str) (list (quote f) (list (quote quote) x)))) (list [(quote x)] x))))))
+  ([x] (list (quote fn) (quote f) (list [] (list (quote str) (list (quote f) (list (quote quote) x)))) (list [(quote x)] x))))
+
+;;wow solution
+;;(fn [] (let [x ["(fn [] (let [x "
+;;                "] (str (first x) x (second x))))"]]
+;;         (str (first x) x (second x))))
