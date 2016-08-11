@@ -925,3 +925,6 @@ apply +
 ;;(fn [] (let [x ["(fn [] (let [x "
 ;;                "] (str (first x) x (second x))))"]]
 ;;         (str (first x) x (second x))))
+
+;;126 Through the Looking Class
+java.lang.Class
