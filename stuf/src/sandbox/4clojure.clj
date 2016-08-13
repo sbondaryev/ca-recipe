@@ -928,3 +928,7 @@ apply +
 
 ;;126 Through the Looking Class
 java.lang.Class
+
+
+;;
+#(Integer/toString % 2)
