@@ -931,4 +931,7 @@ java.lang.Class
 
 
 ;;
-#(Integer/toString % 2)
+(defn b->m [b]
+  (let [l (count (Integer/toString (apply max b) 2))
+        frm (str "~" l ",'0B")]
+    (map #(clojure.pprint/cl-format nil frm %) b)))
