@@ -935,3 +935,7 @@ java.lang.Class
   (let [l (count (Integer/toString (apply max b) 2))
         frm (str "~" l ",'0B")]
     (map #(clojure.pprint/cl-format nil frm %) b)))
+
+(defn f [b line cnt]
+  (for (i (range (/ (- (count line) cnt) 2) (count line))) [i line]))
+  
