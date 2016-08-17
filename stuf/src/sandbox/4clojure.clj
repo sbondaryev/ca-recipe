@@ -936,6 +936,8 @@ java.lang.Class
         frm (str "~" l ",'0B")]
     (map #(clojure.pprint/cl-format nil frm %) b)))
 
-(defn f [b line cnt]
-  (for (i (range (/ (- (count line) cnt) 2) (count line))) [i line]))
+(defn f [b line lenth]
+  (let [n (count (first b))
+        start (/ (- n lenth) 2) ]
+    (for [i (range start (+ start lenth))] (get-in b [line i]))))
   
