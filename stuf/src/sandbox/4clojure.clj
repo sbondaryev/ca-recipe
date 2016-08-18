@@ -934,10 +934,18 @@ java.lang.Class
 (defn b->m [b]
   (let [l (count (Integer/toString (apply max b) 2))
         frm (str "~" l ",'0B")]
-    (map #(clojure.pprint/cl-format nil frm %) b)))
+    (mapv #(clojure.pprint/cl-format nil frm %) b)))
 
-(defn f [b line lenth]
-  (let [n (count (first b))
-        start (/ (- n lenth) 2) ]
-    (for [i (range start (+ start lenth))] (get-in b [line i]))))
+(defn f
+  ([b] (f b inc))
+  ([b itr] (filter identity (map #(f b % itr) (range (count b)))))
+  ([b line itr] (f b line (count (first b)) [] itr))
+  ([b line len res itr]
+   (when (and (odd? (count (first b))) (>= line  0) (< line (count b)))
+     (let [n (count (first b))
+           start (/ (- n len) 2)
+           segm (for [i (range start (+ start len))] (get-in b [line i]))]
+       (if (<= len 1)
+         (cons (get-in b [line start]) res)
+         (f b (itr line) (- len 2) (concat segm res) itr))))))
   
