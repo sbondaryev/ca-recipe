@@ -949,3 +949,21 @@ java.lang.Class
          (cons (get-in b [line start]) res)
          (f b (itr line) (- len 2) (concat segm res) itr))))))
   
+(defn lt [b]
+  (map butlast (butlast b)))
+
+(defn rt [b]
+  (map rest (butlast b)))
+
+(defn lb [b]
+  (map butlast (rest b)))
+
+(defn rb [b]
+  (map rest (rest b)))
+
+(defn fract
+  ([b] (fract (memoize fract) b))
+  ([mem b]
+   (if (= (count b) 1)
+     1
+     (+ (mem mem (lt b)) (mem mem (rt b)) (mem mem (lb b)) (mem mem (lb b))))))
