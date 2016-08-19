@@ -949,7 +949,7 @@ java.lang.Class
          (cons (get-in b [line start]) res)
          (middle b (itr line) (- len 2) (concat segm res) itr))))))
 
-(defn corner [b]
+(defn corners [b]
   (let [n (count b)
         r (for [i (range n) j (range i n)] (get-in b [i j]))
         l (for [i (range n) j (range 0 (inc i))] (get-in b [i j]))]
@@ -974,3 +974,8 @@ java.lang.Class
      1
      (+ (mem mem (lt b)) (mem mem (rt b)) (mem mem (lb b)) (mem mem (lb b))))))
 
+(defn triangles [b]
+  (let [bt (apply mapv str (reverse b))]
+    (->>
+     (concat (corners bt) (corners b) (middle b inc) (middle b dec))
+     (remove #(some #{\0} %)))))
