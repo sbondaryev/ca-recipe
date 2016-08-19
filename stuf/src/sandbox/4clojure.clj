@@ -936,10 +936,10 @@ java.lang.Class
         frm (str "~" l ",'0B")]
     (mapv #(clojure.pprint/cl-format nil frm %) b)))
 
-(defn f
-  ([b] (f b inc))
-  ([b itr] (filter identity (map #(f b % itr) (range (count b)))))
-  ([b line itr] (f b line (count (first b)) [] itr))
+(defn middle
+  ([b] (middle b inc))
+  ([b itr] (filter identity (map #(middle b % itr) (range (count b)))))
+  ([b line itr] (middle b line (count (first b)) [] itr))
   ([b line len res itr]
    (when (and (odd? (count (first b))) (>= line  0) (< line (count b)))
      (let [n (count (first b))
@@ -947,7 +947,13 @@ java.lang.Class
            segm (for [i (range start (+ start len))] (get-in b [line i]))]
        (if (<= len 1)
          (cons (get-in b [line start]) res)
-         (f b (itr line) (- len 2) (concat segm res) itr))))))
+         (middle b (itr line) (- len 2) (concat segm res) itr))))))
+
+(defn corner [b]
+  (let [n (count b)
+        r (for [i (range n) j (range i n)] (get-in b [i j]))
+        l (for [i (range n) j (range 0 (inc i))] (get-in b [i j]))]
+    (list r l)))
   
 (defn lt [b]
   (map butlast (butlast b)))
@@ -967,3 +973,4 @@ java.lang.Class
    (if (= (count b) 1)
      1
      (+ (mem mem (lt b)) (mem mem (rt b)) (mem mem (lb b)) (mem mem (lb b))))))
+
