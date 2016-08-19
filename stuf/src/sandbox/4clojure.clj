@@ -930,52 +930,70 @@ apply +
 java.lang.Class
 
 
-;;
-(defn b->m [b]
-  (let [l (count (Integer/toString (apply max b) 2))
-        frm (str "~" l ",'0B")]
-    (mapv #(clojure.pprint/cl-format nil frm %) b)))
+;;127 Love Triangle
+(letfn
+    [(b->m [b]
+       (let [hight (count b)
+             width (count (Integer/toString (apply max b) 2))
+             frm (str "~" (max width hight) ",'0B")]
+         (mapv #(clojure.pprint/cl-format nil frm %) b)))
 
-(defn middle
-  ([b] (middle b inc))
-  ([b itr] (filter identity (map #(middle b % itr) (range (count b)))))
-  ([b line itr] (middle b line (count (first b)) [] itr))
-  ([b line len res itr]
-   (when (and (odd? (count (first b))) (>= line  0) (< line (count b)))
-     (let [n (count (first b))
-           start (/ (- n len) 2)
-           segm (for [i (range start (+ start len))] (get-in b [line i]))]
-       (if (<= len 1)
-         (cons (get-in b [line start]) res)
-         (middle b (itr line) (- len 2) (concat segm res) itr))))))
+     (middle
+       ([b] (middle b inc))
+       ([b itr] (filter identity (map #(middle b % itr) (range (count b)))))
+       ([b line itr] (middle b line (count (first b)) [] itr))
+       ([b line len res itr]
+        (when (and (odd? (count (first b))) (>= line  0) (< line (count b)))
+          (let [n (count (first b))
+                start (/ (- n len) 2)
+                segm (for [i (range start (+ start len))] (get-in b [line i]))]
+            (if (<= len 1)
+              (cons (get-in b [line start]) res)
+              (middle b (itr line) (- len 2) (concat segm res) itr))))))
 
-(defn corners [b]
-  (let [n (count b)
-        r (for [i (range n) j (range i n)] (get-in b [i j]))
-        l (for [i (range n) j (range 0 (inc i))] (get-in b [i j]))]
-    (list r l)))
+     (corners [b]
+       (let [n (count b)
+             r (for [i (range n) j (range i n)] (get-in b [i j]))
+             l (for [i (range n) j (range 0 (inc i))] (get-in b [i j]))]
+         (list r l)))
   
-(defn lt [b]
-  (map butlast (butlast b)))
+     (lt [b]
+       (mapv #(apply str (butlast %))  (butlast b)))
 
-(defn rt [b]
-  (map rest (butlast b)))
+     (rt [b]
+       (mapv #(apply str (rest %)) (butlast b)))
 
-(defn lb [b]
-  (map butlast (rest b)))
+     (lb [b]
+       (mapv #(apply str (butlast %)) (rest b)))
 
-(defn rb [b]
-  (map rest (rest b)))
+     (rb [b]
+       (mapv #(apply str (rest %)) (rest b)))
 
-(defn fract
-  ([b] (fract (memoize fract) b))
-  ([mem b]
-   (if (= (count b) 1)
-     1
-     (+ (mem mem (lt b)) (mem mem (rt b)) (mem mem (lb b)) (mem mem (lb b))))))
+     (tri [b]
+       (let [bt (apply mapv str (reverse b))]
+         (->>
+          (concat
+           (corners bt)
+           (corners b)
+           (middle b inc)
+           (middle b dec)
+           (middle bt inc)
+           (middle bt dec))
+          (remove #(some #{\0} %)))))
 
-(defn triangles [b]
-  (let [bt (apply mapv str (reverse b))]
-    (->>
-     (concat (corners bt) (corners b) (middle b inc) (middle b dec))
-     (remove #(some #{\0} %)))))
+     (fract
+       ([b] (fract (memoize fract) b))
+       ([mem b]
+        (if (= (count b) 1)
+          nil
+          (concat (tri b)
+                  (mem mem (lt b))
+                  (mem mem (rt b))
+                  (mem mem (lb b))
+                  (mem mem (lb b))))))]
+
+ (defn f[b]
+    (let [t (fract (b->m b))]
+      (if-not (empty? t)
+        (apply max (map count t))
+        nil))))
