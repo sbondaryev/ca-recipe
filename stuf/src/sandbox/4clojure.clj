@@ -997,3 +997,8 @@ java.lang.Class
       (if-not (empty? t)
         (apply max (map count t))
         nil))))
+
+;;128 Recognize Playing Cards
+(fn [[s r]]
+  (hash-map :suit ({\D :diamond \H :heart \C :club \S :spade} s)
+            :rank ((zipmap [\2 \3 \4 \5 \6 \7 \8 \9 \T \J \Q \K \A] (range)) r)))
