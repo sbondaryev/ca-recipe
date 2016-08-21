@@ -662,7 +662,13 @@ apply +
               :else (concat
                      (map #(conj % fst) (comb (dec m) rst))
                      (comb m rst))))]
-  (set (comb m (seq st)))))
+    (set (comb m (seq st)))))
+;;wow solution
+;;(defn k-combos [n items]
+;;  (if (zero? n) [#{}]
+;;      ((comp set mapcat)
+;;       #(for [i (k-combos (dec n) (disj items %))] (conj i %))
+;;       items)))
 
 ;;104 Write Roman Numerals
 (fn [a]
