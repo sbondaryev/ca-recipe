@@ -1002,3 +1002,29 @@ java.lang.Class
 (fn [[s r]]
   (hash-map :suit ({\D :diamond \H :heart \C :club \S :spade} s)
             :rank ((zipmap [\2 \3 \4 \5 \6 \7 \8 \9 \T \J \Q \K \A] (range)) r)))
+
+;;130 Tree reparenting
+(defn f
+  ([root xs] (f root xs nil))
+  ([root xs parent]
+   (println parent)
+   (let [add-parent (fn [path parent]
+                      (if (empty? parent)
+                        path
+                        (concat path (list parent))))]
+     (cond
+       (= (first xs) root) (add-parent xs parent)
+       (not (seq? xs)) nil
+       :else
+       (some identity
+             (map #(f root
+                      %
+                      (add-parent (remove #{%} xs) parent))
+                  (filter seq? xs)))))))
+;; wow solution
+;;(fn [n t]
+;;  (->> t
+;;       (tree-seq next rest)
+;;       (filter #(some #{n} (flatten %)))
+;;       (reduce (fn [a b]
+;;                 (concat b (list (remove #{b} a)))))))
