@@ -1013,7 +1013,6 @@ java.lang.Class
 (defn f
   ([root xs] (f root xs nil))
   ([root xs parent]
-   (println parent)
    (let [add-parent (fn [path parent]
                       (if (empty? parent)
                         path
@@ -1034,3 +1033,19 @@ java.lang.Class
 ;;       (filter #(some #{n} (flatten %)))
 ;;       (reduce (fn [a b]
 ;;                 (concat b (list (remove #{b} a)))))))
+
+;;131 Sum Some Set Subsets
+(letfn
+    [(powerset [xs]
+       (reduce (fn [sets x]
+                 (->> (map #(conj % x) sets)
+                      (into sets)))
+               #{#{}} xs))
+     (subsums [xs]
+       (->> (powerset xs)
+            (#(disj %  #{}))
+            (map #(apply + %))
+            (set)))]
+  (fn f [& xs]
+    ((complement empty?)
+     (apply clojure.set/intersection (map subsums xs)))))
