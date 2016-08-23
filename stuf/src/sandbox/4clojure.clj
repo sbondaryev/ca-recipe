@@ -1049,3 +1049,22 @@ java.lang.Class
   (fn f [& xs]
     ((complement empty?)
      (apply clojure.set/intersection (map subsums xs)))))
+
+;;132 Insert between two items
+(defn f[op val [fst & rst :as xs]]
+  (lazy-seq
+   (cond
+     (not (seq rst)) xs
+     (op fst (first rst)) (cons fst (cons val (f op val rst)))
+     :else (cons fst (f op val rst)))))
+;;wow solution
+;;(fn [p v xs]
+;;  (mapcat
+;;   #(if (p %1 %2) [%1 v] [%1])
+;;   xs
+;;   (lazy-cat (rest xs) (take 1 xs))))
+
+;;134 A nil key
+#((comp boolean (set %2)) [% nil])
+;;wow solution
+;;#(nil? (%2 % %))
