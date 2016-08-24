@@ -374,24 +374,24 @@ apply +
            (= d -1) (= (filter (set (filter (set s1) s2)) s1) (seq s1))
            (= d 1) (recur s2 s1)
            :else false)))
-     
+
      (tree [xs]
        (->>
         (for [s1 xs s2 xs] [s1 s2])
         (filter #(apply cmp %))
         (reduce #(update-in %1 [(first %2)] conj (second %2)) {})))
-     
+
      (r1 [ks path result xs]
        (if (seq ks)
          (r1 (rest ks) path (r2 (first ks) path result xs) xs)
          result))
-     
+
      (r2 [k path result xs]
        (cond
          ((set path) k) (conj result path)
          (xs k) (r1 (xs k) (conj path k) result xs)
          :else (conj result (conj path k))))]
-  
+
   (defn f[st]
     (->>
      (tree st)
@@ -455,14 +455,14 @@ apply +
 ;;89 Graph Tour
 (letfn
     [(next-tulpes [t graph path]
-       (let [node (remove (set (last path)) t)] 
+       (let [node (remove (set (last path)) t)]
          (->> (filter #(some (set node) %) graph)
               (remove #(= % t)))))
 
      (visited? [path]
        (->> (frequencies path)
             (some (fn [[_ freq]] (> freq 2)))))
-       
+
 
      (next-graph [t graph]
        (let [[n m] (split-with (partial not= t) graph)]
@@ -526,7 +526,7 @@ apply +
      (partition-all 2 1)
      (map (fn[[a b]] (if (and b (< a b)) (- a) a)))
      (apply +))))
-       
+
 ;;93 Partially Flatten a Sequence
 (defn f
   ([col] (f col []))
@@ -607,7 +607,7 @@ apply +
          (cons (mod n 10) xs)
          (f (int (/ n 10)) (cons (mod n 10) xs))))]
   #(f (* %1 %2) []))
-  
+
 ;;100 Least Common Multiple
 (defn f [& xs]
   (let [g (fn [n mult]
@@ -658,7 +658,7 @@ apply +
             (cond
               (= m 1) (map hash-set  xs)
               (= (count xs) m) (list (set xs))
-              (< (count xs) m) '() 
+              (< (count xs) m) '()
               :else (concat
                      (map #(conj % fst) (comb (dec m) rst))
                      (comb m rst))))]
@@ -690,7 +690,7 @@ apply +
          (apply str))))
 ;; wow solution
 ;; #(clojure.pprint/cl-format nil "~@R" %)
-    
+
 ;;105 Identify keys and values
 (letfn
     [(aux [[fst & rst :as xs] [[fstm] :as m]]
@@ -733,9 +733,9 @@ apply +
   (lazy-seq
    (let [xss (mapcat #(vector (count %) (first %)) (partition-by identity xs))]
         (cons xss (f xss)))))
-         
+
 ;;111 Crossword puzzle
-(letfn 
+(letfn
     [(cmpr [[fw & rw :as word] [fp & rp :as path]]
        (cond
          (not= (count word) (count path)) false
@@ -837,7 +837,7 @@ apply +
                      :else (boolean (some
                                      #(find-rec board % (cons pos path))
                                      (map #(mapv + pos %) steps))))))]
-    (find-m board (find-c board) []))) 
+    (find-m board (find-c board) [])))
 
 ;;118 Re-implement Map
 (fn my-map [pred [fst & rst :as xs]]
@@ -869,15 +869,15 @@ apply +
 ;;               (= :e (get-in %2 [x y]))
 ;;               ((fn [[[a b c] [d e f] [g h i] :as x]]
 ;;                  (some {[% % %] %}
-;;                        (list* [a d g] 
+;;                        (list* [a d g]
 ;;                               [b e h]
-;;                               [c f i] 
+;;                               [c f i]
 ;;                               [a e i]
-;;                               [c e g] 
+;;                               [c e g]
 ;;                               x)))
 ;;                (assoc-in %2 [x y] %)))] [x y]))
 
-;;120 Sum of square of digits 
+;;120 Sum of square of digits
 (defn f [xs]
   (let [digits (fn [n] (map #(- (int %) (int \0)) (str n)))
         pws (fn [d] (apply + (map #(* % %) d)))]
@@ -906,7 +906,7 @@ apply +
                     x (range 0 (count (first r)))
                     :when (= 'e (get-in r [y x]))] [y x])
         flip-rec (fn flip-rec [[y x :as p] fy fx res]
-                   (cond 
+                   (cond
                      (= (rcolor color) (get-in r p))
                      (flip-rec [(fy y) (fx x)]
                                fy
@@ -962,7 +962,7 @@ java.lang.Class
              r (for [i (range n) j (range i n)] (get-in b [i j]))
              l (for [i (range n) j (range 0 (inc i))] (get-in b [i j]))]
          (list r l)))
-  
+
      (lt [b]
        (mapv #(apply str (butlast %))  (butlast b)))
 
@@ -1068,3 +1068,13 @@ java.lang.Class
 #((comp boolean (set %2)) [% nil])
 ;;wow solution
 ;;#(nil? (%2 % %))
+
+(defn f [fst & rst]
+  (reduce (fn [m [op opd]] (op m opd)) fst (partition 2 rst)))
+
+;;135 Infix Calculator
+(fn f [fst & rst]
+  (reduce (fn [m [op opd]] (op m opd)) fst (partition 2 rst)))
+;;(fn me
+;;  ([x f y] (f x y))
+;;  ([x f y & r] (apply me (f x y) r)))
