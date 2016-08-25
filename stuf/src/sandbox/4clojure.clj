@@ -1078,3 +1078,10 @@ java.lang.Class
 ;;(fn me
 ;;  ([x f y] (f x y))
 ;;  ([x f y & r] (apply me (f x y) r)))
+
+;;137 Digits and bases
+(defn f
+  ([num base] (vec (f num base [])))
+  ([num base res]
+   (if (= 0 (quot num base)) (cons num res)
+       (recur (quot num base) base (cons (mod num base) res)))))
