@@ -1085,3 +1085,16 @@ java.lang.Class
   ([num base res]
    (if (= 0 (quot num base)) (cons num res)
        (recur (quot num base) base (cons (mod num base) res)))))
+
+(defn f
+  ([xs num] (take num (f xs
+                        (cycle [[-1 0] [0 1] [1 0] [0 -1]])
+                        #{})))
+  ([xy ops history]
+  (lazy-seq
+   (let [nxy (map + xy (first ops))
+         nnxy (map + xy (second ops))]
+     (if (history nnxy)
+       (cons xy (f nxy ops (conj history xy)))
+       (cons xy (f nnxy (rest ops) (conj history xy))))))))
+
