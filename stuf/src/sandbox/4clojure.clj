@@ -1086,16 +1086,44 @@ java.lang.Class
    (if (= 0 (quot num base)) (cons num res)
        (recur (quot num base) base (cons (mod num base) res)))))
 
-(defn f
-  ([xs size]
-   (->> (f xs (cycle [[-1 0] [0 1] [1 0] [0 -1]]) #{})
-        (map (fn [[y x]] [(- (+ y x) 1) (+ (- x y) size)]))
-        (take (* size size))))
-  ([xy ops history]
-   (lazy-seq
-    (let [nxy (map + xy (first ops))
-          nnxy (map + xy (second ops))]
-      (if (history nnxy)
-        (cons xy (f nxy ops (conj history xy)))
-        (cons xy (f nnxy (rest ops) (conj history xy))))))))
+;;138 Squares Squared
+(letfn
+    [(path
+       ([xs size]
+        (->> (path xs (cycle [[-1 0] [0 1] [1 0] [0 -1]]) #{})
+             (map (fn [[y x]] [(- (+ y x) 2) (+ (- x y) (dec size))]))
+             (take (* size size))))
+       ([xy ops history]
+        (lazy-seq
+         (let [nxy (map + xy (first ops))
+               nnxy (map + xy (second ops))]
+           (if (history nnxy)
+             (cons xy (path nxy ops (conj history xy)))
+             (cons xy (path nnxy (rest ops) (conj history xy))))))))
+
+     (sq [base limit]
+       (if (> base limit)
+         nil
+         (cons base (sq (* base base) limit))))
+
+     (pad [s n symb]
+       (apply str (for [i (range 0 (max (count s) n))] (get s i symb))))
+
+     (create-board [size]
+       (let [repeatv (comp vec repeat)]
+         (repeatv size (repeatv size " "))))]
+
+     (fn f [base limit]
+       (let [squars (apply str (sq base limit))
+             len (int (Math/ceil (Math/sqrt (count squars))))
+             padded-squars (pad squars (* len len) \*)
+             start (int (Math/ceil (/ len 2)))
+             board (create-board (+ len (dec len)))
+             coords (map #(vector % %2) padded-squars (path [start start] len))]
+         (->>
+          (reduce (fn [m [sym coord]] (assoc-in m coord sym))
+                  board
+                  coords)
+          (map #(apply str %))))))
+
 
