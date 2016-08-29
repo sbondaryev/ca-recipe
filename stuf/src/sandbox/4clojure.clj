@@ -1135,5 +1135,19 @@ java.lang.Class
   (let [base (quot (count t) 2)]
     (get-in t [(+ base y) (+ base x)])))
   
-(defn divs [x]
-  (for [i (range 1 (inc x)) j (range 1 (inc x)) :when (= x (* i j))] [i j]))
+(defn divs [len x]
+  (for [i (range 1 (inc len)) j (range 1 (inc len)) :when (= x (* i j))] [i j]))
+
+(defn pows [lim]
+  (for [i (iterate #(* 2 %) 1) :while (< i lim)] i))
+
+(defn zone [ktor [start-y start-x] [y x]]
+  (for [dy (range y) dx (range x)]
+    (get-in-tor ktor [(- start-y dy) (- start-x dx)])))
+
+(defn zones [kmap point]
+  (let [ktor (torus kmap)
+        len (count kmap)
+        corners (mapcat #(divs len %) (pows (* len len)))]
+    (map #(zone ktor point %) corners)))
+
