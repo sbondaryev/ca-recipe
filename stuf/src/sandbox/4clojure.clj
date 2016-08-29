@@ -1126,4 +1126,14 @@ java.lang.Class
                   coords)
           (map #(apply str %))))))
 
+;;Veitch
+(defn torus [m]
+  (let [double-x (map #(vec (concat % %)) m)]
+    (vec (concat double-x double-x))))
 
+(defn get-in-tor [t [y x]]
+  (let [base (quot (count t) 2)]
+    (get-in t [(+ base y) (+ base x)])))
+  
+(defn divs [x]
+  (for [i (range 1 (inc x)) j (range 1 (inc x)) :when (= x (* i j))] [i j]))
