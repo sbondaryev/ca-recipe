@@ -1127,27 +1127,37 @@ java.lang.Class
           (map #(apply str %))))))
 
 ;;Veitch
-(defn torus [m]
-  (let [double-x (map #(vec (concat % %)) m)]
-    (vec (concat double-x double-x))))
+(def mp [[1  1  1  1]
+         [5  6  7  8]
+         [9  10 11 12]
+         [1 14 15 16]])
 
-(defn get-in-tor [t [y x]]
-  (let [base (quot (count t) 2)]
-    (get-in t [(+ base y) (+ base x)])))
-  
 (defn divs [len x]
   (for [i (range 1 (inc len)) j (range 1 (inc len)) :when (= x (* i j))] [i j]))
 
 (defn pows [lim]
   (for [i (iterate #(* 2 %) 1) :while (< i lim)] i))
 
-(defn zone [ktor [start-y start-x] [y x]]
-  (for [dy (range y) dx (range x)]
-    (get-in-tor ktor [(- start-y dy) (- start-x dx)])))
+(defn term [kmap [start-y start-x] [y x]]
+  (let [len (count kmap)]
+    (for [dy (range y) dx (range x)
+          :let [i (mod (+ start-y dy) len) j (mod (+ start-x dx) len)]]
+      [(get-in kmap [i j]) [i j]])))
 
-(defn zones [kmap point]
-  (let [ktor (torus kmap)
-        len (count kmap)
+(defn minterm? [zone]
+  (every? #{1} (map first zone)))
+
+(defn minterms-iter [kmap point]
+  (let [len (count kmap)
         corners (mapcat #(divs len %) (pows (* len len)))]
-    (map #(zone ktor point %) corners)))
+    (->> (map #(term kmap point %) corners)
+         (filter #(minterm? %))
+         (map #(set (map second %))))))
+
+(defn minterms [kmap]
+  (let [len (count kmap)
+        ones (for [i (range len) j (range len)
+                   :when (= 1 (get-in kmap [i j]))] [i j])]
+    (mapcat #(minterms-iter kmap %) ones))) 
+ 
 
