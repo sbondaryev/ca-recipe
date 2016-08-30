@@ -1130,7 +1130,7 @@ java.lang.Class
 (def mp [[1  1  1  1]
          [5  6  7  8]
          [9  10 11 12]
-         [1 14 15 16]])
+         [1 14 15  1]])
 
 (defn divs [len x]
   (for [i (range 1 (inc len)) j (range 1 (inc len)) :when (= x (* i j))] [i j]))
@@ -1159,5 +1159,15 @@ java.lang.Class
         ones (for [i (range len) j (range len)
                    :when (= 1 (get-in kmap [i j]))] [i j])]
     (mapcat #(minterms-iter kmap %) ones))) 
- 
 
+(defn smaller? [term terms]
+  (some empty? (map #(clojure.set/difference term %) terms)))
+
+(defn largest
+  ([minterms] (max-minterms minterms '()))
+  ([[fst & rst :as minterm] res]
+   (cond
+     (not (seq minterm)) res
+     (or (smaller? fst res) (smaller? fst rst)) (largest rst res)
+     :else (largest rst (conj res fst)))))
+    
