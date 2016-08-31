@@ -1126,83 +1126,86 @@ java.lang.Class
                   coords)
           (map #(apply str %))))))
 
-;;Veitch
-(def mp [[1 0 0 1]
-         [1 0 0 1]
-         [0 1 1 0]
-         [1 0 0 1]])
+;;140 Veitch, Please!
+(letfn
+    [(wl [kmap]
+       [(count (first kmap)) (count kmap)])
 
-(defn divs [len x]
-  (for [i (range 1 (inc len)) j (range 1 (inc len)) :when (= x (* i j))] [i j]))
+     (divs [w l x]
+       (for [i (range 1 (inc l)) j (range 1 (inc w)) :when (= x (* i j))] [i j]))
 
-(defn pows [lim]
-  (for [i (iterate #(* 2 %) 1) :while (< i lim)] i))
+     (pows [lim]
+       (for [i (iterate #(* 2 %) 1) :while (< i lim)] i))
 
-(defn term [kmap [start-y start-x] [y x]]
-  (let [len (count kmap)]
-    (for [dy (range y) dx (range x)
-          :let [i (mod (+ start-y dy) len) j (mod (+ start-x dx) len)]]
-      [(get-in kmap [i j]) [i j]])))
+     (term [kmap [start-y start-x] [y x]]
+       (let [[w l] (wl kmap)]
+         (for [dy (range y) dx (range x)
+               :let [i (mod (+ start-y dy) l) j (mod (+ start-x dx) w)]]
+           [(get-in kmap [i j]) [i j]])))
 
-(defn minterm? [zone]
-  (every? #{1} (map first zone)))
+     (minterm? [zone]
+       (every? #{1} (map first zone)))
 
-(defn minterms-iter [kmap point]
-  (let [len (count kmap)
-        corners (mapcat #(divs len %) (pows (* len len)))]
-    (->> (map #(term kmap point %) corners)
-         (filter #(minterm? %))
-         (map #(set (map second %))))))
+     (minterms-iter [kmap point]
+       (let [[w l] (wl kmap)
+             corners (mapcat #(divs w l %) (pows (* w l)))]
+         (->> (map #(term kmap point %) corners)
+              (filter #(minterm? %))
+              (map #(set (map second %))))))
 
-(defn smaller? [term terms]
-  (empty? (apply (partial clojure.set/difference term) terms)))
+     (smaller? [term terms]
+       (empty? (apply (partial clojure.set/difference term) terms)))
 
-(defn largest
-  ([minterms] (largest (sort #(< (count %1) (count %2)) minterms) '()))
-  ([[fst & rst :as minterm] res]
-   (cond
-     (not (seq minterm)) res
-     (smaller? fst (concat res rst)) (largest rst res)
-     :else (largest rst (conj res fst)))))
+     (largest
+       ([minterms] (largest (sort #(< (count %1) (count %2)) minterms) '()))
+       ([[fst & rst :as minterm] res]
+        (cond
+          (not (seq minterm)) res
+          (smaller? fst (concat res rst)) (largest rst res)
+          :else (largest rst (conj res fst)))))
 
-(defn minterms [kmap]
-  (let [len (count kmap)
-        ones (for [i (range len) j (range len)
-                   :when (= 1 (get-in kmap [i j]))] [i j])]
-    (mapcat #(minterms-iter kmap %) ones)))
+     (minterms [kmap]
+       (let [[w l] (wl kmap)
+             ones (for [i (range l) j (range w)
+                        :when (= 1 (get-in kmap [i j]))] [i j])]
+         (mapcat #(minterms-iter kmap %) ones)))
 
-(defn gray-code [n]
-  (->> (range (Math/pow 2 n))
-       (map #(bit-xor % (bit-shift-right % 1)))
-       (map #(clojure.pprint/cl-format nil (str "~" n "'0B") %))))
+     (gray-code [n]
+       (->> (range (Math/pow 2 n))
+            (map #(bit-xor % (bit-shift-right % 1)))
+            (map #(clojure.pprint/cl-format nil (str "~" n "'0B") %))))
 
-(defn apply-gray [str code]
-  (map #(if (= %2 \1)
-          (symbol (clojure.string/upper-case %1))
-          (symbol (clojure.string/lower-case %1))) str code))
+     (apply-gray [str code]
+       (map #(if (= %2 \1)
+               (symbol (clojure.string/upper-case %1))
+               (symbol (clojure.string/lower-case %1))) str code))
 
-(defn gray [str]
-  (map #(apply-gray str %) (gray-code (count str))))
+     (gray [str]
+       (map #(apply-gray str %) (gray-code (count str))))
 
-(defn match? [gray samples]
-  (vector (apply str gray)
-          (if (some identity (map #(every? (set gray) %) samples))
-            1 0)))
-
-(defn k-match? [gray samples]
-  (if (some identity (map #(every? (set gray) %) samples))
+     (match? [gray samples]
+       (if (some identity (map #(every? (set gray) %) samples))
             1 0))
 
-(defn gray-map [sy sx samples]
-  (mapv
-   (fn [grsy] (mapv #(match? (concat grsy %) samples) (gray sx)))
-   (gray sy)))
+     (gray-map [samples]
+       (let [sample (sort (clojure.string/lower-case (apply str (first samples))))
+             mid (quot (count sample) 2)
+             sy (apply str (take mid sample))
+             sx (apply str (drop mid sample))]
+         (mapv (fn [y] (mapv (fn [x] (concat y x)) (gray sx))) (gray sy))))
 
+     (karn-map [g-map samples]
+       (mapv #(mapv (fn[node] (match? node samples)) %) g-map))
 
-(defn k-map [samples]
-  (let [sample (sort (clojure.string/lower-case (apply str (first samples))))
-        mid (quot (count sample) 2)
-        y (apply str (take mid sample))
-        x (apply str (drop mid sample))]
-    (gray-map y x samples)))
+     (make-disj [g-map term]
+       (let [rset (set (mapcat #(get-in g-map %) term))]
+         (remove #(and (rset (symbol (clojure.string/upper-case %)))
+                       (rset (symbol (clojure.string/lower-case %)))) rset)))]
+
+  (fn veitch [samples]
+    (let [g-map (gray-map samples)
+          k-map (karn-map g-map samples)
+          terms (largest (minterms k-map))]
+      (set (map #(set (make-disj g-map %)) terms)))))
+
 
