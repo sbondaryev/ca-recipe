@@ -1208,4 +1208,31 @@ java.lang.Class
           terms (largest (minterms k-map))]
       (set (map #(set (make-disj g-map %)) terms)))))
 
+;;wow solutuion
+(letfn
+    [(upsym [s]
+       (symbol (clojure.string/upper-case (name s))))
+     (downsym [s]
+       (symbol (clojure.string/lower-case (name s))))
+     (swapsym [s]
+       (if (= s (upsym s))
+         (downsym s)
+         (upsym s)))
+     (independent [sym s sets]
+       (let [indep (disj s sym)
+             swapped (conj indep (swapsym sym))]
+         (if (or (contains? sets indep)
+                 (contains? sets swapped))
+           indep
+           false)))
+     (update-iter [s sets]
+       (if-let [indep (some #(independent % s sets) s)]
+         indep
+         s))
+     (update [sets]
+       (set (map #(update-iter % sets) sets)))]
+  (defn min-set [sets]
+    (if (= (update sets) sets)
+      sets
+      (min-set (update sets)))))
 
