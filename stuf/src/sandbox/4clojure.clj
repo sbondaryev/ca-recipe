@@ -1127,10 +1127,10 @@ java.lang.Class
           (map #(apply str %))))))
 
 ;;Veitch
-(def mp [[1  1  1  1]
-         [5  6  7  8]
-         [9  10 11 12]
-         [1 14 15  1]])
+(def mp [[1 0 0 1]
+         [1 0 0 1]
+         [0 1 1 0]
+         [1 0 0 1]])
 
 (defn divs [len x]
   (for [i (range 1 (inc len)) j (range 1 (inc len)) :when (= x (* i j))] [i j]))
@@ -1154,20 +1154,55 @@ java.lang.Class
          (filter #(minterm? %))
          (map #(set (map second %))))))
 
+(defn smaller? [term terms]
+  (empty? (apply (partial clojure.set/difference term) terms)))
+
+(defn largest
+  ([minterms] (largest (sort #(< (count %1) (count %2)) minterms) '()))
+  ([[fst & rst :as minterm] res]
+   (cond
+     (not (seq minterm)) res
+     (smaller? fst (concat res rst)) (largest rst res)
+     :else (largest rst (conj res fst)))))
+
 (defn minterms [kmap]
   (let [len (count kmap)
         ones (for [i (range len) j (range len)
                    :when (= 1 (get-in kmap [i j]))] [i j])]
-    (mapcat #(minterms-iter kmap %) ones))) 
+    (mapcat #(minterms-iter kmap %) ones)))
 
-(defn smaller? [term terms]
-  (some empty? (map #(clojure.set/difference term %) terms)))
+(defn gray-code [n]
+  (->> (range (Math/pow 2 n))
+       (map #(bit-xor % (bit-shift-right % 1)))
+       (map #(clojure.pprint/cl-format nil (str "~" n "'0B") %))))
 
-(defn largest
-  ([minterms] (max-minterms minterms '()))
-  ([[fst & rst :as minterm] res]
-   (cond
-     (not (seq minterm)) res
-     (or (smaller? fst res) (smaller? fst rst)) (largest rst res)
-     :else (largest rst (conj res fst)))))
-    
+(defn apply-gray [str code]
+  (map #(if (= %2 \1)
+          (symbol (clojure.string/upper-case %1))
+          (symbol (clojure.string/lower-case %1))) str code))
+
+(defn gray [str]
+  (map #(apply-gray str %) (gray-code (count str))))
+
+(defn match? [gray samples]
+  (vector (apply str gray)
+          (if (some identity (map #(every? (set gray) %) samples))
+            1 0)))
+
+(defn k-match? [gray samples]
+  (if (some identity (map #(every? (set gray) %) samples))
+            1 0))
+
+(defn gray-map [sy sx samples]
+  (mapv
+   (fn [grsy] (mapv #(match? (concat grsy %) samples) (gray sx)))
+   (gray sy)))
+
+
+(defn k-map [samples]
+  (let [sample (sort (clojure.string/lower-case (apply str (first samples))))
+        mid (quot (count sample) 2)
+        y (apply str (take mid sample))
+        x (apply str (drop mid sample))]
+    (gray-map y x samples)))
+
