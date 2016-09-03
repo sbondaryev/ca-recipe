@@ -204,7 +204,7 @@ mapcat list
 
 ;;54 Partition a Sequence
 #(loop [xs %2  res []]
-   (if (>= (count xs) % )
+   (if (>= (count xs) %)
      (recur (drop % xs) (conj res (take % xs)))
      res))
 
@@ -575,8 +575,8 @@ apply +
    (cond
      (and (not (sequential? l)) (not (sequential? r))) (= l r)
      (and (sequential? l) (sequential? r)) (and (= (first l) (first r))
-                                  (f (second l) (last r))
-                                  (f (last l) (second r)))
+                                            (f (second l) (last r))
+                                            (f (last l) (second r)))
      :else false)))
 ;; wow solution
 ;;#(let [t (fn t [[v l r]] [v (if r (t r)) (if l (t l))])
@@ -685,7 +685,7 @@ apply +
                            9 [i x]}]
                  (apply str (d->r d))))
         digits (fn [n] (map #(- (int %) (int \0)) (str n)))]
-    (->> (map a->r (reverse (digits a)) (partition-all 3 2 r ))
+    (->> (map a->r (reverse (digits a)) (partition-all 3 2 r))
          (reverse)
          (apply str))))
 ;; wow solution
@@ -849,7 +849,7 @@ apply +
   (let [m* (fn [n m] (map #(* % n) m))
         l+ (fn [p l] (map #(map + p %) l))
         seed [[0 1] [1 0] [1 1] [-1 1]]
-        mult [-2 -1 1 2 ]
+        mult [-2 -1 1 2]
         delta (map (fn [l] (map #(m* % l) mult)) seed)
         lines (fn [p] (map #(l+ p %) delta))
         check-ln (fn [ln] (filter identity (map #(get-in xo %) ln)))
@@ -1113,18 +1113,18 @@ java.lang.Class
        (let [repeatv (comp vec repeat)]
          (repeatv size (repeatv size " "))))]
 
-     (fn f [base limit]
-       (let [squars (apply str (sq base limit))
-             len (int (Math/ceil (Math/sqrt (count squars))))
-             padded-squars (pad squars (* len len) \*)
-             start (int (Math/ceil (/ len 2)))
-             board (create-board (+ len (dec len)))
-             coords (map #(vector % %2) padded-squars (path [start start] len))]
-         (->>
-          (reduce (fn [m [sym coord]] (assoc-in m coord sym))
-                  board
-                  coords)
-          (map #(apply str %))))))
+    (fn f [base limit]
+      (let [squars (apply str (sq base limit))
+            len (int (Math/ceil (Math/sqrt (count squars))))
+            padded-squars (pad squars (* len len) \*)
+            start (int (Math/ceil (/ len 2)))
+            board (create-board (+ len (dec len)))
+            coords (map #(vector % %2) padded-squars (path [start start] len))]
+        (->>
+         (reduce (fn [m [sym coord]] (assoc-in m coord sym))
+                 board
+                 coords)
+         (map #(apply str %))))))
 
 ;;140 Veitch, Please!
 (letfn
@@ -1185,7 +1185,7 @@ java.lang.Class
 
      (match? [gray samples]
        (if (some identity (map #(every? (set gray) %) samples))
-            1 0))
+           1 0))
 
      (gray-map [samples]
        (let [sample (sort (clojure.string/lower-case (apply str (first samples))))
@@ -1235,4 +1235,3 @@ java.lang.Class
     (if (= (update sets) sets)
       sets
       (min-set (update sets)))))
-
