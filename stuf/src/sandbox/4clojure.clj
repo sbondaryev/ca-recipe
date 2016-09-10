@@ -1235,3 +1235,6 @@ java.lang.Class
     (if (= (update sets) sets)
       sets
       (min-set (update sets)))))
+;;141
+(defn [trump]
+  (fn [game] (map identity game)))
