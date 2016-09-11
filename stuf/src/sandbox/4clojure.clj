@@ -1236,5 +1236,6 @@ java.lang.Class
       sets
       (min-set (update sets)))))
 ;;141
-(defn [trump]
-  (fn [game] (map identity game)))
+(defn mk[trump]
+  (fn [[{lead :suit} & rst :as trick]]
+    (sort-by :rank (filter #(= (:suit % trick) lead) trick))))
