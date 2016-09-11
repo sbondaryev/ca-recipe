@@ -1235,7 +1235,22 @@ java.lang.Class
     (if (= (update sets) sets)
       sets
       (min-set (update sets)))))
-;;141
+
+;;141 Tricky card games
 (defn mk[trump]
-  (fn [[{lead :suit} & rst :as trick]]
-    (sort-by :rank (filter #(= (:suit % trick) lead) trick))))
+  (let [lead (fn [game suit]
+               (->> game
+                    (filter #(= (:suit %) suit))
+                    (sort-by :rank)
+                    (last)))]
+    (fn [[{lead-suit :suit} & rst :as trick]]
+      (let [lead-winer (lead trick lead-suit)
+            trump-winer (lead trick trump)]
+        (if trump-winer trump-winer lead-winer)))))
+;; wow solution
+;;(fn [s]
+;;  (fn [c]
+;;    (->> c 
+;;         (filter #(= (:suit %) (if s s (:suit (first c)))))
+;;         (sort-by :rank)
+;;         last)))
