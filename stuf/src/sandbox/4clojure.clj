@@ -1247,10 +1247,18 @@ java.lang.Class
       (let [lead-winer (lead trick lead-suit)
             trump-winer (lead trick trump)]
         (if trump-winer trump-winer lead-winer)))))
-;; wow solution
-;;(fn [s]
-;;  (fn [c]
-;;    (->> c 
-;;         (filter #(= (:suit %) (if s s (:suit (first c)))))
-;;         (sort-by :rank)
-;;         last)))
+
+;;143 dot product
+#(apply + (map * %1 %2))
+
+;;144 Oscilrate
+(defn f [param & funcs]
+  (let [osc (fn osc [param [fst & rst]]
+              (lazy-seq (concat [param] (osc (fst param) rst))))]
+    (osc param (cycle funcs))))
+
+;;wow solution
+;;(fn [v & f] (reductions #(%2 %) v (cycle f)))
+
+;;145 For the win
+[1 5 9 13 17 21 25 29 33 37]
