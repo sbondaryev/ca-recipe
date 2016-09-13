@@ -1262,3 +1262,9 @@ java.lang.Class
 
 ;;145 For the win
 [1 5 9 13 17 21 25 29 33 37]
+
+;;146 Trees into tables
+#(into {} (for [[i m] %  [j v] m] [[i j] v]))
+
+;;147 Pascal's Trapezoid
+(fn [xs] (iterate #(map (partial apply +') (partition 2 1 (concat [0] % [0]))) xs))
