@@ -1268,3 +1268,10 @@ java.lang.Class
 
 ;;147 Pascal's Trapezoid
 (fn [xs] (iterate #(map (partial apply +') (partition 2 1 (concat [0] % [0]))) xs))
+
+;;148 The Big Divide
+(defn f [n fst scd]
+  (let [sum (fn [n d]
+              (let [div (bigint (quot (dec n) d))]
+                (* d div (inc div) 1/2)))]
+    (+ (sum n fst) (sum n scd) (- (sum n (* fst scd))))))
