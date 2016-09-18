@@ -1275,3 +1275,23 @@ java.lang.Class
               (let [div (bigint (quot (dec n) d))]
                 (* d div (inc div) 1/2)))]
     (+ (sum n fst) (sum n scd) (- (sum n (* fst scd))))))
+
+;;150
+(defn f [xs]
+  (lazy-seq
+   (let [cnt (count xs)
+         mdl (int (Math/ceil (/ cnt 2)))
+         part (take mdl xs)
+         trap (if (odd? cnt) (rest (reverse part)) (reverse part))
+         num (read-string (apply str (concat part trap)))
+         nxt (read-string (apply str xs))]
+     (cons num (f (str (inc nxt)))))))
+
+(defn dcount [num]
+  (count (str num)))
+
+(defn pow [num n]
+  (case
+      (< n 1) 1
+      (= n 1) num
+      :else (pow (* num num) (dec n))))
