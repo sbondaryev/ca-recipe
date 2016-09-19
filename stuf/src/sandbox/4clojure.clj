@@ -1276,18 +1276,20 @@ java.lang.Class
                 (* d div (inc div) 1/2)))]
     (+ (sum n fst) (sum n scd) (- (sum n (* fst scd))))))
 
-;;150
+;;150 Palindromic Numbers
 (letfn
     [(mid [cnt]
-       (let [middle (int (Math/ceil (/ cnt 2)))]
+       (let [middle (long (Math/ceil (/ cnt 2)))]
          (if (odd? cnt) (dec middle) middle)))
+     (pow-ten [n]
+       (Long. (apply str (cons 1 (repeat n 0)))))
      (reverce-num [num]
-       (Integer/parseInt (apply str (reverse (str num)))))]
+       (Long. (apply str (reverse (str num)))))]
   (defn f [num]
     (lazy-seq
      (let [cnt (count (str num))
            midl (mid cnt)
-           base (int (Math/pow 10 midl))
+           base (pow-ten midl)
            lpart (quot num base)
            lbase (* lpart base)
            rpart (mod (reverce-num lpart) base)
