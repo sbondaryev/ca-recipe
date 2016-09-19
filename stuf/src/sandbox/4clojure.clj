@@ -1277,21 +1277,21 @@ java.lang.Class
     (+ (sum n fst) (sum n scd) (- (sum n (* fst scd))))))
 
 ;;150
-(defn f [xs]
-  (lazy-seq
-   (let [cnt (count xs)
-         mdl (int (Math/ceil (/ cnt 2)))
-         part (take mdl xs)
-         trap (if (odd? cnt) (rest (reverse part)) (reverse part))
-         num (read-string (apply str (concat part trap)))
-         nxt (read-string (apply str xs))]
-     (cons num (f (str (inc nxt)))))))
-
-(defn dcount [num]
-  (count (str num)))
-
-(defn pow [num n]
-  (case
-      (< n 1) 1
-      (= n 1) num
-      :else (pow (* num num) (dec n))))
+(letfn
+    [(mid [cnt]
+       (let [middle (int (Math/ceil (/ cnt 2)))]
+         (if (odd? cnt) (dec middle) middle)))
+     (reverce-num [num]
+       (Integer/parseInt (apply str (reverse (str num)))))]
+  (defn f [num]
+    (lazy-seq
+     (let [cnt (count (str num))
+           midl (mid cnt)
+           base (int (Math/pow 10 midl))
+           lpart (quot num base)
+           lbase (* lpart base)
+           rpart (mod (reverce-num lpart) base)
+           new-num (+ lbase rpart)]
+       (if (< new-num num)
+         (f (+ lbase base))
+         (cons new-num (f (+ lbase base))))))))
