@@ -1297,3 +1297,8 @@ java.lang.Class
        (if (< new-num num)
          (f (+ lbase base))
          (cons new-num (f (+ lbase base))))))))
+
+;;152 Latin Square Slicing
+(defn lsqr? [sq]
+  (and (= (count sq) (count (first sq)))
+       (= (count sq) (count (reduce into #{} sq)))))
