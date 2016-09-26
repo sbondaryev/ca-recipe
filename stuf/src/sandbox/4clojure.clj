@@ -1300,6 +1300,10 @@ java.lang.Class
 
 ;;152 Latin Square Slicing
 (defn lsqr? [sq]
-  (let [cnt (count sq)]
-    (and (= cnt (count (first sq)))
-         (= cnt (count (reduce into #{} sq))))))
+  (let [cnt (count sq)
+        tsq (apply map vector sq)
+        xsq (concat tsq sq)
+        cnts (map #((comp count into) #{} %) xsq)]
+    (and (= cnt (count (reduce into #{} sq)))
+         (every? #(= cnt %) cnts))))
+    
