@@ -1306,4 +1306,12 @@ java.lang.Class
         cnts (map #((comp count into) #{} %) xsq)]
     (and (= cnt (count (reduce into #{} sq)))
          (every? #(= cnt %) cnts))))
-    
+
+(defn subv [v lenmax res]
+  (let [space " "
+        lenrest (- lenmax (count v))]
+    (if (<= lenrest 0)
+      (conj res v)
+      (subv (concat [space] v)
+            lenmax
+            (conj res (concat v (take lenrest (repeat space))))))))
