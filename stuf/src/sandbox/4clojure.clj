@@ -1307,16 +1307,28 @@ java.lang.Class
     (and (= cnt (count (reduce into #{} sq)))
          (every? #(= cnt %) cnts))))
 
-(defn subv [v lenmax res]
-  (let [space " "
-        lenrest (- lenmax (count v))]
-    (if (<= lenrest 0)
-      (conj res v)
-      (subv (concat [space] v)
-            lenmax
-            (conj res (concat v (take lenrest (repeat space))))))))
+(defn subv
+  ([v lenmax] (map vec (subv v lenmax [])))
+  ([v lenmax res]
+   (let [space " "
+         lenrest (- lenmax (count v))]
+     (if (<= lenrest 0)
+       (conj res v)
+       (subv (concat [space] v)
+             lenmax
+             (conj res (concat v (take lenrest (repeat space)))))))))
 
 (defn superpos [[fst & rst]]
   (if-not (seq rst)
     (map list fst)
     (for [x fst y (superpos rst)] (conj y x))))
+
+(defn maxlen [xs]
+  (apply max (map count xs))) 
+
+(defn all-superpos [xs]
+  (let [maxlen (apply max (map count xs))]
+    (->> (map #(subv % maxlen) xs)
+         (superpos)
+         (map vec))))
+
