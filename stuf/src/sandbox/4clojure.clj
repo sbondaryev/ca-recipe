@@ -1315,3 +1315,8 @@ java.lang.Class
       (subv (concat [space] v)
             lenmax
             (conj res (concat v (take lenrest (repeat space))))))))
+
+(defn superpos [[fst & rst]]
+  (if-not (seq rst)
+    (map list fst)
+    (for [x fst y (superpos rst)] (conj y x))))
