@@ -1332,3 +1332,8 @@ java.lang.Class
          (superpos)
          (map vec))))
 
+(defn sqrs [h w]
+  (for [y (range h) l1 (range 2 (- (inc h) y))
+        x (range w) l2 (range 2 (- (inc w) x))
+        :when (= l1 l2)] [y x l1]))
+
