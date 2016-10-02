@@ -1299,46 +1299,71 @@ java.lang.Class
          (cons new-num (f (+ lbase base))))))))
 
 ;;152 Latin Square Slicing
-(defn lsqr? [sq]
-  (let [cnt (count sq)
-        tsq (apply map vector sq)
-        xsq (concat tsq sq)
-        cnts (map #((comp count into) #{} %) xsq)]
-    (and (= cnt (count (reduce into #{} sq)))
-         (every? #(= cnt %) cnts))))
+(letfn
+    [(latin? [sq]
+       (let [cnt (count sq)
+             tsq (apply map vector sq)
+             xsq (concat tsq sq)
+             cnts (map #((comp count into) #{} %) xsq)]
+         (and (= cnt (count (reduce into #{} sq)))
+              (every? #(= cnt %) cnts))))
 
-(defn subv
-  ([v lenmax] (map vec (subv v lenmax [])))
-  ([v lenmax res]
-   (let [space " "
-         lenrest (- lenmax (count v))]
-     (if (<= lenrest 0)
-       (conj res v)
-       (subv (concat [space] v)
-             lenmax
-             (conj res (concat v (take lenrest (repeat space)))))))))
+     (containsEmpty? [sq]
+       (let [vals (reduce into #{} sq)]
+         (some #(or (= % nil) (= % " ")) vals)))
 
-(defn superpos [[fst & rst]]
-  (if-not (seq rst)
-    (map list fst)
-    (for [x fst y (superpos rst)] (conj y x))))
+     (subv
+       ([v lenmax] (map vec (subv v lenmax [])))
+       ([v lenmax res]
+        (let [space " "
+              lenrest (- lenmax (count v))]
+          (if (<= lenrest 0)
+            (conj res v)
+            (subv (concat [space] v)
+                  lenmax
+                  (conj res (concat v (take lenrest (repeat space)))))))))
 
-(defn maxlen [xs]
-  (apply max (map count xs))) 
+     (make-superpos [[fst & rst]]
+       (if-not (seq rst)
+         (map list fst)
+         (for [x fst y (make-superpos rst)] (conj y x))))
 
-(defn all-superpos [xs]
-  (let [maxlen (apply max (map count xs))]
-    (->> (map #(subv % maxlen) xs)
-         (superpos)
-         (map vec))))
+     (all-superpos [xs]
+       (let [maxlen (apply max (map count xs))]
+         (->> (map #(subv % maxlen) xs)
+              (make-superpos)
+              (map vec))))
 
-(defn sqrs-coords [h w]
-  (for [y (range h) l1 (range 2 (- (inc h) y))
-        x (range w) l2 (range 2 (- (inc w) x))
-        :when (= l1 l2)] [y x l1]))
+     (get-sqr [area y x side]
+       (let [sub-area (for [dy (range side) dx (range side)]
+                        (get-in area [(+ y dy) (+ x dx)]))]
+         (->> (partition side sub-area)
+              (mapv vec))))
 
-(defn sqr [[y x side] area]
-  (let [sub-area (for [dy (range side) dx (range side)]
-                   (get-in area [(+ y dy) (+ x dx)]))]
-    (->> (partition side sub-area)
-         (mapv vec))))
+     (pos-sqrs
+       ([area y x] (pos-sqrs area y x 2 []))
+       ([area y x side res]
+        (let [sqr (get-sqr area y x side)]
+          (cond
+            (containsEmpty? sqr) res
+            (latin? sqr) (recur area y x (inc side) (conj res sqr))
+            :else (recur area y x (inc side) res)))))
+
+     (all-sqrs [superpos]
+       (->> (for [y (range (count superpos))
+                  x (range (count (first superpos)))
+                  :when (not= (get-in superpos [y x]) " ")]
+              (pos-sqrs superpos y x))
+            (apply concat)))
+     ]
+  (defn deb [xs]
+    (->> (all-superpos xs)
+         (mapcat all-sqrs)
+         (set)))
+  (defn count-latins [xs]
+    (->> (all-superpos xs)
+         (mapcat all-sqrs)
+         (set)
+         (map count)
+         (frequencies)
+        )))
