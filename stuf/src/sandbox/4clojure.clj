@@ -1367,11 +1367,10 @@ java.lang.Class
            (frequencies)
            ))))
 ;; wow solution
-(defn slices [v w x mx]
-        (let [minv (max (+ x (- (count v) mx)) 0)
-              maxv (min x (- (count v) w))]
-          (for [i (range minv (inc maxv))]
-            (subvec v i (+ i w)))))
+(defn subv [v size x max-length]
+  (->> (partition size 1 v)
+       (drop x)
+       (take (inc (max (- (count v) max-length) 0))))) 
 
 (defn superpos [[fst & rst]]
   (if-not (seq rst)
@@ -1381,7 +1380,7 @@ java.lang.Class
 (defn align-row [vecs max-length]
   (let [segments (for [size (range 2 (inc (min (count vecs) max-length)))
                        i (range 0 (inc (- max-length size)))]
-                   (map #(slices % size i max-length) (take size vecs)))]
+                   (map #(subv % size i max-length) (take size vecs)))]
     (mapcat superpos segments)))
 
 (defn squares [vecs max-length]
