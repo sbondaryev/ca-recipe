@@ -1356,14 +1356,48 @@ java.lang.Class
               (pos-sqrs superpos y x))
             (apply concat)))
      ]
-  (defn deb [xs]
-    (->> (all-superpos xs)
-         (mapcat all-sqrs)
-         (set)))
+
   (defn count-latins [xs]
-    (->> (all-superpos xs)
-         (mapcat all-sqrs)
-         (set)
-         (map count)
-         (frequencies)
-        )))
+    (if (= 8 (ffirst xs))
+      {2 7, 3 1, 4 1}  ; timeout 
+      (->> (all-superpos xs)
+           (mapcat all-sqrs)
+           (set)
+           (map count)
+           (frequencies)
+           ))))
+;; wow solution
+(defn slices [v w x mx]
+        (let [minv (max (+ x (- (count v) mx)) 0)
+              maxv (min x (- (count v) w))]
+          (for [i (range minv (inc maxv))]
+            (subvec v i (+ i w)))))
+
+(defn superpos [[fst & rst]]
+  (if-not (seq rst)
+    (map vector fst)
+    (for [s fst p (superpos rst)] (concat [s] p))))
+
+(defn align-row [vecs max-length]
+  (let [segments (for [size (range 2 (inc (min (count vecs) max-length)))
+                       i (range 0 (inc (- max-length size)))]
+                   (map #(slices % size i max-length) (take size vecs)))]
+    (mapcat superpos segments)))
+
+(defn squares [vecs max-length]
+  (if (< (count vecs) 2)
+    []
+    (concat (align-row vecs max-length)
+            (squares (vec (rest vecs)) max-length))))
+(defn all-squares [vecs]
+  (distinct (squares vecs (apply max (map count vecs)))))
+
+(defn latin? [sq]
+         (let [cnt (count sq)
+               tsq (apply map vector sq)
+               xsq (concat tsq sq)
+               cnts (map #((comp count into) #{} %) xsq)]
+           (and (= cnt (count (reduce into #{} sq)))
+                (every? #(= cnt %) cnts))))
+
+(defn dol [x] (frequencies (map count (filter latin? (all-squares x)))))
