@@ -1367,36 +1367,39 @@ java.lang.Class
            (frequencies)
            ))))
 ;; wow solution
-(defn subv [v size x max-length]
-  (->> (partition size 1 v)
-       (drop x)
-       (take (inc (max (- (count v) max-length) 0))))) 
+(letfn
+    [(subv [row pos size max-length]
+       (let [row-len (count row)
+             row-min (max (+ pos (- row-len max-length)) 0)
+             row-max (inc (min pos (- row-len size)))]
+         (drop row-min (take row-max (partition size 1 row)))))
 
-(defn superpos [[fst & rst]]
-  (if-not (seq rst)
-    (map vector fst)
-    (for [s fst p (superpos rst)] (concat [s] p))))
 
-(defn align-row [vecs max-length]
-  (let [segments (for [size (range 2 (inc (min (count vecs) max-length)))
-                       i (range 0 (inc (- max-length size)))]
-                   (map #(subv % size i max-length) (take size vecs)))]
-    (mapcat superpos segments)))
+     (superpos [[fst & rst]]
+       (if-not (seq rst)
+         (map vector fst)
+         (for [s fst p (superpos rst)] (concat [s] p))))
 
-(defn squares [vecs max-length]
-  (if (< (count vecs) 2)
-    []
-    (concat (align-row vecs max-length)
-            (squares (vec (rest vecs)) max-length))))
-(defn all-squares [vecs]
-  (distinct (squares vecs (apply max (map count vecs)))))
+     (row-squares [vecs max-length]
+       (let [segments (for [size (range 2 (inc (min (count vecs) max-length)))
+                            pos (range 0 (inc (- max-length size)))]
+                        (map #(subv % pos size max-length) (take size vecs)))]
+         (mapcat superpos segments)))
 
-(defn latin? [sq]
-         (let [cnt (count sq)
-               tsq (apply map vector sq)
-               xsq (concat tsq sq)
-               cnts (map #((comp count into) #{} %) xsq)]
-           (and (= cnt (count (reduce into #{} sq)))
-                (every? #(= cnt %) cnts))))
+     (squares [vecs max-length]
+       (if (< (count vecs) 2)
+         []
+         (concat (row-squares vecs max-length)
+                 (squares (vec (rest vecs)) max-length))))
 
-(defn dol [x] (frequencies (map count (filter latin? (all-squares x)))))
+     (all-squares [vecs]
+       (distinct (squares vecs (apply max (map count vecs)))))
+     
+     (latin? [sq]
+       (let [cnt (count sq)
+             tsq (apply map vector sq)
+             xsq (concat tsq sq)
+             cnts (map #((comp count into) #{} %) xsq)]
+         (and (= cnt (count (reduce into #{} sq)))
+              (every? #(= cnt %) cnts))))]
+  (defn dol [x] (frequencies (map count (filter latin? (all-squares x))))))
