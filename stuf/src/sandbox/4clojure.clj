@@ -1403,3 +1403,8 @@ java.lang.Class
          (and (= cnt (count (reduce into #{} sq)))
               (every? #(= cnt %) cnts))))]
   (defn dol [x] (frequencies (map count (filter latin? (all-squares x))))))
+
+;;153 Pairwise Disjoint Sets
+(fn [xs]
+  (= (count (reduce into #{} xs))
+     (apply + (map count xs))))
