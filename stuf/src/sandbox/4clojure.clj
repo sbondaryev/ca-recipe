@@ -1408,3 +1408,6 @@ java.lang.Class
 (fn [xs]
   (= (count (reduce into #{} xs))
      (apply + (map count xs))))
+
+;;156 Map Defaults
+(fn [v m] (reduce #(conj %1 [%2 v]) {} m))
