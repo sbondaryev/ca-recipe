@@ -1411,3 +1411,7 @@ java.lang.Class
 
 ;;156 Map Defaults
 (fn [v m] (reduce #(conj %1 [%2 v]) {} m))
+
+;;157 Indexing Sequences
+#(map vector % (range))
+
