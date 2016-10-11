@@ -1415,3 +1415,25 @@ java.lang.Class
 ;;157 Indexing Sequences
 #(map vector % (range))
 
+;;158 Decurry
+(defn f [g]
+  (let [decurry-rec
+        (fn [g [fst & rst]]
+          (if (number? g)
+            g
+            (recur (g fst) rst)))]
+    (fn decurry [& args]
+      (decurry-rec g args))))
+;;wow solution
+(fn [f] (fn [& xs] (reduce #(%1 %2) f xs)))
+;;wowow solution
+(fn decurry [f]
+  (fn [& args]
+    (loop [f f [x & r] args]
+      (if (fn? f) (recur (f x) r) f) )))
+
+;;161 Subset and Superset
+#{1 2}
+
+;;162 Logical falsity and truth
+1
