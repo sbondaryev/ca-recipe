@@ -1437,3 +1437,10 @@ java.lang.Class
 
 ;;162 Logical falsity and truth
 1
+
+;;164 Language of a DFA
+(defn get-next [from dfa]
+  (from (:transitions dfa)))
+
+(defn accepted? [symb dfa]
+  (symb (:accepts dfa)))
