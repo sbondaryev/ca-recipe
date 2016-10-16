@@ -1444,3 +1444,10 @@ java.lang.Class
 
 (defn accepted? [symb dfa]
   (symb (:accepts dfa)))
+
+(defn states [current-state dfa]
+  (let [next-states (map second (get-next current-state dfa))]
+    (if (empty? next-states)
+      (vector current-state)
+      (mapcat #(cons current-state (states % dfa)) next-states))))
+
