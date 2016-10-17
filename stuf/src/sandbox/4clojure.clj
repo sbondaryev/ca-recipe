@@ -1445,9 +1445,16 @@ java.lang.Class
 (defn accepted? [symb dfa]
   (symb (:accepts dfa)))
 
-(defn states [current-state dfa]
-  (let [next-states (get-next current-state dfa)]
-    (if (empty? next-states)
-      nil
-      (mapcat (fn [[c s]] (cons c (states s dfa))) next-states))))
+(defn alphabet [state dfa res]
+  (->> (get-next state dfa)
+       (filter (fn [[_ s]] (accepted? s dfa)))
+       (map (fn [[c _]] (str res c)))))
+
+(defn states
+  ([dfa] (states (:start dfa) dfa ""))
+  ([current-state dfa res]
+   (let [next-states (get-next current-state dfa)
+         alphb (alphabet current-state dfa res)]
+     (concat alphb
+             (mapcat (fn [[c s]] (states s dfa (str res c))) next-states)))))
 
