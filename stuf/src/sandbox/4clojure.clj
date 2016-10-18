@@ -1439,22 +1439,27 @@ java.lang.Class
 1
 
 ;;164 Language of a DFA
-(defn get-next [from dfa]
-  (from (:transitions dfa)))
+(letfn
+    [(get-next [from dfa]
+       (from (:transitions dfa)))
 
-(defn accepted? [symb dfa]
-  (symb (:accepts dfa)))
+     (accepted? [symb dfa]
+       (symb (:accepts dfa)))
 
-(defn alphabet [state dfa res]
-  (->> (get-next state dfa)
-       (filter (fn [[_ s]] (accepted? s dfa)))
-       (map (fn [[c _]] (str res c)))))
+     (alphabet [state dfa res]
+       (->> (get-next state dfa)
+            (filter (fn [[_ s]] (accepted? s dfa)))
+            (map (fn [[c _]] (str res c)))))]
 
-(defn states
-  ([dfa] (states (:start dfa) dfa ""))
-  ([current-state dfa res]
-   (let [next-states (get-next current-state dfa)
-         alphb (alphabet current-state dfa res)]
-     (concat alphb
-             (mapcat (fn [[c s]] (states s dfa (str res c))) next-states)))))
+  (defn ldfa
+    ([dfa] (ldfa (:start dfa) dfa ""))
+    ([current-state dfa res]
+     (lazy-seq
+      (let [next-states (get-next current-state dfa)
+            alphb (alphabet current-state dfa res)]
+        (concat alphb
+               (mapcat (fn [[c s]] (ldfa s dfa (str res c))) next-states)))))))
+
+
+
 
