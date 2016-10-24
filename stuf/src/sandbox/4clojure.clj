@@ -1460,6 +1460,18 @@ java.lang.Class
         (concat alphb
                (mapcat (fn [[c s]] (ldfa s dfa (str res c))) next-states)))))))
 
+;;166 Comparisons
+#(if (%1 %2 %3)
+   :lt
+   (if (%1 %3 %2)
+     :gt
+     :eq))
+;;wow solution
+;;(fn[com x y]
+;;  (cond
+;;   (com x y) :lt
+;;   (com y x) :gt
+;;   :else :eq))
 
 
 
