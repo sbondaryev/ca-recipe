@@ -1473,5 +1473,15 @@ java.lang.Class
 ;;   (com y x) :gt
 ;;   :else :eq))
 
-
-
+;;168 Infinite Matrix
+(letfn
+    [(row [f m n]
+       (lazy-seq
+        (cons (f m n) (row f m (inc n)))))]
+  (defn mtx
+    ([f] (mtx f 0 0))
+    ([f m n]
+     (lazy-seq
+      (cons (row f m n) (mtx f (inc m) n))))
+    ([f m n s t]
+     (take s (map #(take t %) (mtx f m n))))))
