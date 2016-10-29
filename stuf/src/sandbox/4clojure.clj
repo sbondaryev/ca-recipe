@@ -1485,3 +1485,13 @@ java.lang.Class
       (cons (row f m n) (mtx f (inc m) n))))
     ([f m n s t]
      (take s (map #(take t %) (mtx f m n))))))
+
+;;171 Intervals
+(defn f [xs]
+  (->> (sort xs)
+       (distinct)
+       (map #(vector % %2) (range))
+       (partition-by #(- (last %) (first %)))
+       (map #(map last %))
+       (map #(vector (first %) (last %)))))
+
