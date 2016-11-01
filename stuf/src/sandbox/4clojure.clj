@@ -1495,3 +1495,5 @@ java.lang.Class
        (map #(map last %))
        (map #(vector (first %) (last %)))))
 
+;;173 Intro to Destructuring 2
+;f a
