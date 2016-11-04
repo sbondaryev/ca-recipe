@@ -1497,3 +1497,12 @@ java.lang.Class
 
 ;;173 Intro to Destructuring 2
 ;f a
+
+;;177
+(def lp [\( \[ \{])
+(def rp [\) \] \}])
+(defn f [[fst & rst] stack]
+  (let [stk (first stack)]
+    (cond
+      (nil? fst) stack
+      ((set lp) fst) (f rst (cons fst stack)))))
