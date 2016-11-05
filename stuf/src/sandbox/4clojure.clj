@@ -1498,11 +1498,14 @@ java.lang.Class
 ;;173 Intro to Destructuring 2
 ;f a
 
-;;177
-(def lp [\( \[ \{])
-(def rp [\) \] \}])
-(defn f [[fst & rst] stack]
-  (let [stk (first stack)]
-    (cond
-      (nil? fst) stack
-      ((set lp) fst) (f rst (cons fst stack)))))
+;;177 Balancing Brackets
+(defn f [str]
+  (let [lp [\( \[ \{]
+        rp [\) \] \}]
+        rlp (zipmap rp lp)]
+    (loop [[fst & rst] str stack []]
+      (cond
+        (nil? fst) (empty? stack)
+        ((set lp) fst) (recur rst (cons fst stack))
+        ((set rp) fst) (if (= (rlp fst) (first stack)) (recur rst (rest stack)) false)
+        :else (recur rst stack)))))
