@@ -1509,3 +1509,22 @@ java.lang.Class
         ((set lp) fst) (recur rst (cons fst stack))
         ((set rp) fst) (if (= (rlp fst) (first stack)) (recur rst (rest stack)) false)
         :else (recur rst stack)))))
+
+;;178
+(defn split-card [[color r]]
+  (let [rank (zipmap [\2 \3 \4 \5 \6 \7 \8 \9 \T \J \Q \K \A] (range))]
+    [color (rank r)]))
+
+(defn f [cards]
+  (->> (map split-card cards)
+       (sort-by second)))
+
+(defn max-seq [cards]
+  (->> (map #(vector % %2) cards (range))
+       (partition-by (fn [[[_ r] p]] (- r p)))
+       (apply max-key count)
+       (map (fn [[card]] card))))
+
+(defn max-same [cards]
+  (->> (partition-by (fn [[_ rank]] rank) cards)
+       (apply max-key count)))
