@@ -1510,21 +1510,78 @@ java.lang.Class
         ((set rp) fst) (if (= (rlp fst) (first stack)) (recur rst (rest stack)) false)
         :else (recur rst stack)))))
 
-;;178
-(defn split-card [[color r]]
-  (let [rank (zipmap [\2 \3 \4 \5 \6 \7 \8 \9 \T \J \Q \K \A] (range))]
-    [color (rank r)]))
+;;178 Best Hand
+(letfn
+    [(hight-rank [cards]
+       (let [rank (zipmap [\2 \3 \4 \5 \6 \7 \8 \9 \T \J \Q \K \A] (range))]
+         (map (fn [[color r]] (vector color (rank r))) cards)))
+     (low-rank [cards]
+       (let [rank (zipmap [\A \2 \3 \4 \5 \6 \7 \8 \9 \T \J \Q \K] (range))]
+         (map (fn [[color r]] (vector color (rank r))) cards)))
+     (max-seq [cards]
+       (->> (sort-by second cards)
+            (map #(vector %2 %1) (range))
+            (partition-by (fn [[[_ r] p]] (- r p)))
+            (apply max-key count)
+            (map (fn [[card]] card))))
+     (max-same-rank [cards]
+       (->> (group-by second cards)
+            (map second)
+            (apply max-key count)))
+     (same-color [cards]
+       (= 1 (count (set (map #(first %) cards)))))
+     (drop-cards [cards dropped]
+       (clojure.set/difference (set cards) (set dropped)))
+     (straight-flush? [cards]
+       (let [maxseq (max-seq cards)]
+         (and (= (count maxseq) 5) (same-color maxseq))))
+     (four-of-a-kind? [cards]
+       (= (count (max-same-rank cards)) 4))
+     (full-house? [cards]
+       (let [maxrank (max-same-rank cards)]
+         (and (= (count maxrank) 3)
+              (= (count (max-same-rank (drop-cards cards maxrank))) 2))))
+     (flush? [cards]
+       (same-color cards))
+     (straight? [cards]
+       (let [maxseq (max-seq cards)]
+         (and (= (count maxseq) 5))))
+     (three-of-a-kind? [cards]
+       (= (count (max-same-rank cards)) 3))
+     (two-pair? [cards]
+       (let [maxrank (max-same-rank cards)]
+         (and (= (count maxrank) 2)
+              (= (count (max-same-rank (drop-cards cards maxrank))) 2))))
+     (pair? [cards]
+       (= (count (max-same-rank cards)) 2))]
+  (defn g [cards]
+    (let [hrank (hight-rank cards)
+          lrank (low-rank cards)]
+      (cond
+        (straight-flush? hrank) :straight-flush
+        (four-of-a-kind? hrank) :four-of-a-kind
+        (full-house? hrank) :full-house
+        (flush? hrank) :flush
+        (or (straight? hrank) (straight? lrank)) :straight
+        (three-of-a-kind? hrank) :three-of-a-kind
+        (two-pair? hrank) :two-pair
+        (pair? hrank) :pair
+        :default :high-card))))
 
-(defn f [cards]
-  (->> (map split-card cards)
-       (sort-by second)))
-
-(defn max-seq [cards]
-  (->> (map #(vector % %2) cards (range))
-       (partition-by (fn [[[_ r] p]] (- r p)))
-       (apply max-key count)
-       (map (fn [[card]] card))))
-
-(defn max-same [cards]
-  (->> (partition-by (fn [[_ rank]] rank) cards)
-       (apply max-key count)))
+;;wow solution
+;;(fn poker [x]
+;;  (let [x1 (map first x)
+;;        flush (apply = x1)
+;;        x2 (map second x)
+;;        freq (sort (vals (frequencies x2)))
+;;        straight ((set (map set (partition 5 1 "A23456789TJQKA"))) (set x2))]
+;;    (cond
+;;      (and straight flush) :straight-flush
+;;      (= [1 4] freq) :four-of-a-kind
+;;      (= [2 3] freq) :full-house
+;;      flush :flush
+;;      straight :straight
+;;      (= [1 1 3] freq) :three-of-a-kind
+;;      (= [1 2 2] freq) :two-pair
+;;      (= [1 1 1 2] freq) :pair
+;;      true :high-card)))
