@@ -1585,3 +1585,14 @@ java.lang.Class
 ;;      (= [1 2 2] freq) :two-pair
 ;;      (= [1 1 1 2] freq) :pair
 ;;      true :high-card)))
+
+;;195 Parentheses... Again
+(defn f
+  ([num] (set (f (repeat num \() (repeat num \)) [])))
+  ([l r p]
+     (cond
+       (= (count l) (count r) 0) (vector (apply str p))
+       (= (count l) (count r)) (f (rest l) r (conj p (first l)))
+       (= (count l) 0) (f l (rest r) (conj p (first r)))
+       (< (count l) (count r)) (concat (f (rest l) r (conj p (first l)))
+                                    (f l (rest r) (conj p (first r)))))))
