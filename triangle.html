@@ -35,7 +35,7 @@
 
 <div id="app">
   <button @click="shufle">shufle triangle</button>
-  <input type="number" v-model="product" placeholder="product value"> (press ▲ arrow to find a product)
+  <input type="number" v-model="product" placeholder="product value"> (try to change the product value using input spinner)
   <div class="triangle" v-for="(line, lineIndex) in triangle" >
     <span :class="{path:index==path[lineIndex]}" v-for="(digit, index) in line">
       {{digit}}
