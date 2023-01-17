@@ -1,0 +1,80 @@
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+<script>
+  const buildTree = function(arrays, k=0) {
+    const current = _.first(arrays)
+    const next = _.tail(arrays)
+    return _.isEmpty(next)
+    ? {
+      index: k,
+      value: _.nth(current, k),
+      children: []
+    }
+    : {
+      index: k,
+      value: _.nth(current, k),
+      children: [buildTree(next, k), buildTree(next, k+1)]
+    }
+  }
+
+  const findProductPath = function(tree, value, path=[], product=1) {
+    const children = _.get(tree, 'children')
+    const index = _.get(tree, 'index')
+    const currentValue = _.toInteger(_.get(tree, 'value'))
+
+    return  _.isEmpty(tree)
+      ? product==value ? path : false
+      : findProductPath(_.nth(children, 0), value, _.concat(path, [index]), product*currentValue) || findProductPath(_.nth(children, 1), value, _.concat(path, [index]), product*currentValue)
+  }
+
+  const randomTriangle = function(height=6) {
+    return _.times(_.random(2, height), (i)=>_.times(i+1, () => _.random(1,9)))
+  }
+</script>
+
+<div id="app">
+  <button @click="shufle">shufle triangle</button>
+  <input type="number" v-model="product" placeholder="product value"> (press ▲ arrow to find a product)
+  <div class="triangle" v-for="(line, lineIndex) in triangle" >
+    <span :class="{path:index==path[lineIndex]}" v-for="(digit, index) in line">
+      {{digit}}
+    </span>
+  </div>
+</div>
+
+<script>
+  const { createApp, ref, computed, watch } = Vue
+
+  const triangle = ref(randomTriangle())
+  const product = ref()
+
+  const path = computed(() => findProductPath(buildTree(triangle.value), product.value))
+  watch(path, () => path.value && alert('Found a path for the product = '+product.value))
+
+  function shufle() {
+    triangle.value=randomTriangle()
+    product.value=''
+  }
+
+  createApp({
+    data() {
+      return {
+        triangle,
+        product,
+        shufle,
+        path,
+      }
+    }
+  }).mount('#app')
+</script>
+
+<style>
+  .triangle {
+    text-align: center;
+  }
+  .path {
+    color: red;
+  }
+</style>
+
