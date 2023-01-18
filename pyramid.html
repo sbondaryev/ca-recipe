@@ -32,7 +32,7 @@
       : findProductPath(left, value, currentPath, currentProduct) || findProductPath(right, value, currentPath, currentProduct)
   }
 
-  const randompyramid = function(height=6) {
+  const randomPyramid = function(height=6) {
     return _.times(_.random(2, height), (i)=>_.times(i+1, () => _.random(1,9)))
   }
 </script>
@@ -50,14 +50,14 @@
 <script>
   const { createApp, ref, computed, watch } = Vue
 
-  const pyramid = ref(randompyramid())
+  const pyramid = ref(randomPyramid())
   const product = ref()
 
   const path = computed(() => findProductPath(buildTree(pyramid.value), product.value))
   watch(path, () => path.value && alert('Found a path for the product = '+product.value))
 
   function shufle() {
-    pyramid.value=randompyramid()
+    pyramid.value=randomPyramid()
     product.value=''
   }
 
