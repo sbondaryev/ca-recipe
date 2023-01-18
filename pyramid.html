@@ -22,10 +22,14 @@
     const children = _.get(tree, 'children')
     const index = _.get(tree, 'index')
     const currentValue = _.toInteger(_.get(tree, 'value'))
+    const currentPath = _.concat(path, [index])
+    const currentProduct = product*currentValue
+    const left = _.nth(children, 0)
+    const right = _.nth(children, 1)
 
     return  _.isEmpty(tree)
       ? product==value ? path : false
-      : findProductPath(_.nth(children, 0), value, _.concat(path, [index]), product*currentValue) || findProductPath(_.nth(children, 1), value, _.concat(path, [index]), product*currentValue)
+      : findProductPath(left, value, currentPath, currentProduct) || findProductPath(right, value, currentPath, currentProduct)
   }
 
   const randompyramid = function(height=6) {
