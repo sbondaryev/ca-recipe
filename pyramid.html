@@ -28,15 +28,15 @@
       : findProductPath(_.nth(children, 0), value, _.concat(path, [index]), product*currentValue) || findProductPath(_.nth(children, 1), value, _.concat(path, [index]), product*currentValue)
   }
 
-  const randomTriangle = function(height=6) {
+  const randompyramid = function(height=6) {
     return _.times(_.random(2, height), (i)=>_.times(i+1, () => _.random(1,9)))
   }
 </script>
 
 <div id="app">
-  <button @click="shufle">shufle triangle</button>
+  <button @click="shufle">shufle pyramid</button>
   <input type="number" v-model="product" placeholder="product value"> (try to change the product value using input spinner)
-  <div class="triangle" v-for="(line, lineIndex) in triangle" >
+  <div class="pyramid" v-for="(line, lineIndex) in pyramid" >
     <span :class="{path:index==path[lineIndex]}" v-for="(digit, index) in line">
       {{digit}}
     </span>
@@ -46,21 +46,21 @@
 <script>
   const { createApp, ref, computed, watch } = Vue
 
-  const triangle = ref(randomTriangle())
+  const pyramid = ref(randompyramid())
   const product = ref()
 
-  const path = computed(() => findProductPath(buildTree(triangle.value), product.value))
+  const path = computed(() => findProductPath(buildTree(pyramid.value), product.value))
   watch(path, () => path.value && alert('Found a path for the product = '+product.value))
 
   function shufle() {
-    triangle.value=randomTriangle()
+    pyramid.value=randompyramid()
     product.value=''
   }
 
   createApp({
     data() {
       return {
-        triangle,
+        pyramid,
         product,
         shufle,
         path,
@@ -70,7 +70,7 @@
 </script>
 
 <style>
-  .triangle {
+  .pyramid {
     text-align: center;
   }
   .path {
